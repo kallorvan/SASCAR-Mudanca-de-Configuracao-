@@ -36,7 +36,14 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
 .dia-hit:hover{fill:rgba(255,255,255,.06)}
 .hero .gl{stroke:rgba(255,255,255,.08)}
 .hero .ax{fill:#7F8EA8}
+/* Topo com altura fixa: encolher ao rolar desloca a página, que volta a cruzar o limite e o topo fica alternando de tamanho. */
+.stickytop.scrolled .top-in{padding:14px 0}
+.stickytop.scrolled .top img{height:34px}
+.stickytop.scrolled .perbar-in{padding:10px 0}
+.stickytop.scrolled .perbar .perlinha{padding:9px 0}
 @media (max-width:640px){.flt select,.flt input[type="search"]{width:100%;max-width:none}.flt label{flex:1 1 140px}}
+/* No celular os filtros ocupariam boa parte da tela; o topo rola junto com a página. */
+@media (max-width:760px){.stickytop{position:relative}}
 </style>
 </head><body>
 
