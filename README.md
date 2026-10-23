@@ -29,7 +29,8 @@ Os dados coletados (`dados/` e `painel.html`) não são versionados neste reposi
 ```bash
 npm install
 export SASCAR_USUARIO=... SASCAR_LOGIN=... SASCAR_SENHA=...
-npm run atualizar   # coleta + gera painel.html (arquivo único, abre em qualquer navegador)
+npm run atualizar   # coleta o último mês + gera painel.html (arquivo único, abre em qualquer navegador)
+node src/coletar.js --de 01/09/2026 --ate 30/09/2026   # coleta um período específico (máx. 30 dias)
 npm test
 ```
 

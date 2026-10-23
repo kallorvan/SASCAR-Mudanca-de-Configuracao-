@@ -2,6 +2,7 @@
 // e grava as movimentações em dados/movimentacoes.json, somando ao histórico já coletado.
 //
 // Credenciais: variáveis de ambiente SASCAR_USUARIO, SASCAR_LOGIN e SASCAR_SENHA.
+// Período opcional no formato do portal: --de 01/09/2026 --ate 30/09/2026 (padrão: último mês).
 
 const fs = require('fs');
 const path = require('path');
@@ -36,13 +37,39 @@ async function entrar(page) {
   }
 }
 
-async function abrirRelatorio(page) {
+async function abrirRelatorio(page, periodo) {
   await page.getByText('Mudança de Configuração', { exact: true }).click();
   await page.getByText('Último Mês', { exact: true }).click();
   await page.getByText('Normal', { exact: true }).click();
   await page.getByText('Visualizar Relatório').click();
   await page.waitForLoadState('networkidle');
   await page.locator('th', { hasText: 'Descrição do comando' }).first().waitFor({ timeout: 120000 });
+
+  if (periodo) {
+    await page.fill('[id="formrelatorio:datainicio"]', `${periodo.de} 00:00`);
+    await page.fill('[id="formrelatorio:dataFinal"]', `${periodo.ate} 23:59`);
+    // "Aplicar" recarrega a tabela por AJAX; espera até as linhas serem do período pedido.
+    await page.click('[id="formrelatorio:botaoPesquisa"]');
+    const paraIso = (d) => d.split('/').reverse().join('-');
+    await page.waitForFunction(({ de, ate, colunas }) => {
+      const iso = (t) => t.slice(0, 10).split('/').reverse().join('-');
+      const datas = [...document.querySelectorAll('tr')]
+        .map((tr) => tr.querySelectorAll('td'))
+        .filter((tds) => tds.length === colunas)
+        .map((tds) => iso(tds[2].innerText.trim()));
+      return datas.length > 0 && datas.every((d) => d >= de && d <= ate);
+    }, { de: paraIso(periodo.de), ate: paraIso(periodo.ate), colunas: COLUNAS.length }, { timeout: 180000, polling: 1000 });
+  }
+}
+
+// Lê --de e --ate (dd/mm/aaaa) da linha de comando.
+function lerPeriodo(args) {
+  const valor = (nome) => { const i = args.indexOf(nome); return i >= 0 ? args[i + 1] : null; };
+  const de = valor('--de'), ate = valor('--ate');
+  if (!de && !ate) return null;
+  const formato = /^\d{2}\/\d{2}\/\d{4}$/;
+  if (!formato.test(de || '') || !formato.test(ate || '')) throw new Error('Use --de e --ate juntos, no formato dd/mm/aaaa.');
+  return { de, ate };
 }
 
 async function lerLinhas(page) {
@@ -68,7 +95,8 @@ async function main() {
 
   try {
     await entrar(page);
-    await abrirRelatorio(page);
+    const periodo = lerPeriodo(process.argv.slice(2));
+    await abrirRelatorio(page, periodo);
     const linhas = await lerLinhas(page);
     if (!linhas.length) throw new Error('O relatório abriu, mas nenhuma linha foi encontrada na tabela.');
 
@@ -79,7 +107,8 @@ async function main() {
 
     fs.mkdirSync(path.dirname(ARQUIVO), { recursive: true });
     fs.writeFileSync(ARQUIVO, JSON.stringify({ atualizadoEm: coletadoEm, movimentacoes }, null, 1) + '\n');
-    console.log(`Coletadas ${novas.length} movimentações; histórico com ${movimentacoes.length}.`);
+    const datas = novas.map((m) => m.data.slice(0, 10)).sort();
+    console.log(`Coletadas ${novas.length} movimentações (${datas[0]} a ${datas[datas.length - 1]}); histórico com ${movimentacoes.length}.`);
   } catch (erro) {
     fs.mkdirSync(PASTA_DEPURACAO, { recursive: true });
     await page.screenshot({ path: path.join(PASTA_DEPURACAO, 'erro.png'), fullPage: true }).catch(() => {});
