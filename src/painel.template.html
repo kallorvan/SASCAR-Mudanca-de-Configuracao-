@@ -1,315 +1,158 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mudança de Configuração SASCAR</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="icon" type="image/png" sizes="32x32" href="__FAVICON__">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Layout: faixa de cabeçalho azul-frota, filtros numa linha, indicadores, alertas, gráficos em grade e a tabela completa. */
-:root {
-  --bg: #f3f5f8;
-  --surface: #fcfcfb;
-  --ink: #0e1a2b;
-  --ink-2: #4a5568;
-  --ink-3: #6b7685;
-  --line: #dde2e9;
-  --grid: #e6e9ee;
-  --band: #0b3a6e;
-  --band-ink: #f2f6fb;
-  --band-ink-2: #b9cbe2;
-  --accent: #f2a900;
-  --series: #2a78d6;
-  --good: #0ca30c;
-  --warning: #fab219;
-  --serious: #ec835a;
-  --critical: #d03b3b;
-  --good-ink: #006300;
-  --critical-ink: #b42828;
-  --serious-ink: #a8481f;
-  --plate-bg: #ffffff;
-  --plate-ink: #111111;
-  --plate-band: #1f4fa3;
-  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
-  --font-body: "Barlow", "Segoe UI", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f141b; --surface: #1a1f27; --ink: #edf1f6; --ink-2: #b6c0cd; --ink-3: #8c97a6;
-    --line: #2c333d; --grid: #262c35; --band: #0a2a50; --band-ink: #eef3fa; --band-ink-2: #9fb5d1;
-    --accent: #f5b324; --series: #3987e5; --good-ink: #5fd35f; --critical-ink: #ff8a8a; --serious-ink: #f0a07f;
-    --plate-bg: #e9ecef; --plate-ink: #111111; --plate-band: #2a5cb8;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f141b; --surface: #1a1f27; --ink: #edf1f6; --ink-2: #b6c0cd; --ink-3: #8c97a6;
-  --line: #2c333d; --grid: #262c35; --band: #0a2a50; --band-ink: #eef3fa; --band-ink-2: #9fb5d1;
-  --accent: #f5b324; --series: #3987e5; --good-ink: #5fd35f; --critical-ink: #ff8a8a; --serious-ink: #f0a07f;
-  --plate-bg: #e9ecef; --plate-ink: #111111; --plate-band: #2a5cb8;
-  color-scheme: dark;
-}
-
-* { box-sizing: border-box; }
-body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.45; }
-.wrap { max-width: 1240px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
-h1, h2 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; }
-h2 { font-size: 1.3rem; letter-spacing: 0.01em; }
-.num { font-variant-numeric: tabular-nums; }
-
-/* Cabeçalho */
-.band { background: var(--band); color: var(--band-ink); border-bottom: 4px solid var(--accent); }
-.band .wrap { padding-block: 22px 18px; display: flex; flex-wrap: wrap; gap: 8px 32px; align-items: end; justify-content: space-between; }
-.eyebrow { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--band-ink-2); font-weight: 600; }
-h1 { font-size: clamp(1.9rem, 4.5vw, 2.7rem); line-height: 1.05; margin-top: 4px; }
-.stamp { font-size: 0.9rem; color: var(--band-ink-2); display: grid; gap: 2px; text-align: right; }
-.stamp strong { color: var(--band-ink); font-weight: 600; }
-
-main.wrap { padding-block: 20px 48px; display: grid; gap: 20px; }
-
-/* Filtros */
-.filtros { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: end; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
-.campo { display: grid; gap: 4px; min-width: 0; }
-.campo label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
-.campo input, .campo select { font: inherit; font-size: 0.92rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; min-height: 36px; max-width: 100%; }
-.campo select { max-width: 260px; }
-.campo input[type="search"] { width: 150px; }
-input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--series); outline-offset: 2px; }
-.btn { font: inherit; font-size: 0.9rem; font-weight: 600; border: 1px solid var(--line); background: transparent; color: var(--ink-2); border-radius: 6px; padding: 7px 12px; cursor: pointer; min-height: 36px; }
-.btn:hover { color: var(--ink); border-color: var(--ink-3); }
-.periodo-rapido { display: flex; gap: 6px; flex-wrap: wrap; }
-.periodo-rapido .btn[aria-pressed="true"] { background: var(--band); color: var(--band-ink); border-color: var(--band); }
-
-/* Indicadores */
-.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px; }
-.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 2px; align-content: start; }
-.kpi .rotulo { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
-.kpi .valor { font-family: var(--font-display); font-weight: 700; font-size: 2.1rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.kpi .nota { font-size: 0.82rem; color: var(--ink-2); }
-.kpi.atencao { border-top: 3px solid var(--critical); }
-.kpi.ok { border-top: 3px solid var(--good); }
-
-/* Blocos */
-.bloco { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: grid; gap: 12px; min-width: 0; }
-.bloco-topo { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: baseline; justify-content: space-between; }
-.sub { color: var(--ink-3); font-size: 0.85rem; }
-
-/* Alertas */
-.alertas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 420px; overflow-y: auto; }
-.alerta { display: grid; grid-template-columns: 88px auto 1fr auto; gap: 4px 14px; align-items: center; padding: 8px 12px; border: 1px solid var(--line); border-left: 4px solid var(--critical); border-radius: 6px; }
-.alerta.pendente { border-left-color: var(--serious); }
-.alerta.ajuste { border-left-color: var(--warning); }
-.pill.ajuste { --dot: var(--warning); color: var(--serious-ink); }
-.delta { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; margin-left: 6px; }
-#alertas-regra { margin: -6px 0 0; }
-.alerta .cmd { min-width: 0; }
-.alerta .cmd small { display: block; color: var(--ink-3); }
-.alerta .quando { color: var(--ink-2); font-size: 0.85rem; text-align: right; }
-.vazio { color: var(--ink-2); padding: 10px 0; }
-
-/* Situação */
-.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; }
-.pill::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--dot); flex: none; }
-.pill.executado { --dot: var(--good); color: var(--good-ink); }
-.pill.expirado { --dot: var(--critical); color: var(--critical-ink); }
-.pill.pendente { --dot: var(--warning); color: var(--serious-ink); }
-.pill.pendente.atrasado { --dot: var(--serious); }
-
-/* Placa Mercosul */
-.placa { display: inline-grid; grid-template-rows: 5px auto; min-width: 74px; border: 1.5px solid var(--plate-ink); border-radius: 4px; overflow: hidden; background: var(--plate-bg); color: var(--plate-ink); text-align: center; vertical-align: middle; }
-.placa::before { content: ""; background: var(--plate-band); }
-.placa span { font-family: var(--font-mono); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; padding: 1px 6px 2px; }
-
-/* Gráficos */
-.graficos { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; }
-.grafico { position: relative; }
-.grafico svg { display: block; width: 100%; height: auto; overflow: visible; }
-.grafico text { fill: var(--ink-3); font-family: var(--font-body); font-size: 11px; }
-.grafico .rotulo-barra { fill: var(--ink-2); font-size: 12px; }
-.grafico .valor-barra { fill: var(--ink); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.grafico .grade { stroke: var(--grid); stroke-width: 1; }
-.grafico .eixo { stroke: var(--line); stroke-width: 1; }
-.legenda { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.82rem; color: var(--ink-2); }
-.legenda span { display: inline-flex; align-items: center; gap: 6px; }
-.legenda i { width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
-.barras { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.barras li { display: grid; gap: 3px; min-width: 0; }
-.barras-nome { font-size: 0.84rem; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.barras-trilho { display: flex; align-items: center; gap: 8px; }
-.barras-barra { height: 8px; background: var(--series); border-radius: 0 4px 4px 0; flex: none; max-width: calc(100% - 52px); }
-.barras-valor { font-size: 0.84rem; font-weight: 600; color: var(--ink); }
-.dica { position: absolute; pointer-events: none; background: var(--ink); color: var(--surface); font-size: 0.8rem; padding: 6px 9px; border-radius: 6px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 2; box-shadow: 0 2px 8px rgb(0 0 0 / 0.18); }
-.dica b { font-weight: 600; }
-
-/* Tabela */
-.tabela-rolagem { overflow: auto; max-height: 70vh; border: 1px solid var(--line); border-radius: 6px; }
-table { border-collapse: collapse; width: 100%; font-size: 0.88rem; min-width: 860px; }
-th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
-th { z-index: 1; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; background: var(--bg); position: sticky; top: 0; }
-td.cmd { max-width: 340px; }
-.troca { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-2); white-space: nowrap; }
-.troca b { color: var(--ink); font-weight: 700; }
-small.usuario { display: block; color: var(--ink-3); font-size: 0.78rem; }
-td b { font-weight: 600; }
-tbody tr:hover { background: var(--bg); }
-.mais { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-
-footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
-
-@media (max-width: 1000px) {
-  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .graficos { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 560px) {
-  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .stamp { text-align: left; }
-  .alerta { grid-template-columns: auto 1fr; }
-  .alerta .quando { grid-column: 1 / -1; text-align: left; }
-  .campo select, .campo input[type="search"] { width: 100%; max-width: none; }
-  .campo { flex: 1 1 140px; }
-}
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+/*__LAYOUT_CSS__*/
 </style>
+<style>
+/* Exclusivo deste painel: filtros com campos, situações e gráfico diário no hero. */
+.flt{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;padding:9px 0}
+.flt label{display:grid;gap:3px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel);min-width:0}
+.flt input,.flt select{font-family:var(--body);font-size:12.5px;color:var(--ink);background:#F6F8FB;border:1px solid var(--line);border-radius:2px;padding:5px 8px;min-height:30px;max-width:100%}
+.flt select{max-width:250px}
+.flt input[type="search"]{width:120px}
+.flt input:focus-visible,.flt select:focus-visible,.btn-l:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.btn-l{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--steel);border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer}
+.btn-l:hover{color:var(--accent-d);border-color:var(--accent)}
+.st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+.st::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--steel-l);flex:none}
+.st.ok{color:#2E7D52}.st.ok::before{background:#2E7D52}
+.st.exp{color:var(--accent-d)}.st.exp::before{background:var(--accent)}
+.st.pend{color:var(--plum)}.st.pend::before{background:var(--plum)}
+.pill.aj{background:#F1EAF6;color:var(--plum)}
+.placa{font-family:var(--mono);font-weight:600;font-size:12px;color:var(--navy);letter-spacing:.06em;white-space:nowrap}
+.troca{font-family:var(--mono);font-size:11.5px;color:var(--steel);white-space:nowrap}
+.troca b{color:var(--navy);font-weight:600}
+.delta{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--plum);margin-left:6px;white-space:nowrap}
+td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel-l);margin-top:2px}
+.lstbox td{vertical-align:middle}
+.kpi.alerta b{color:var(--accent-d)}
+.kpi.ajuste b{color:var(--plum)}
+.mais{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:12.5px;color:var(--steel)}
+.dia-hit{cursor:pointer}
+.dia-hit:hover{fill:rgba(255,255,255,.06)}
+.hero .gl{stroke:rgba(255,255,255,.08)}
+.hero .ax{fill:#7F8EA8}
+@media (max-width:640px){.flt select,.flt input[type="search"]{width:100%;max-width:none}.flt label{flex:1 1 140px}}
+</style>
+</head><body>
 
-<header class="band">
-  <div class="wrap">
-    <div>
-      <div class="eyebrow">SASCAR Telemetry · Relatórios</div>
-      <h1>Mudança de Configuração</h1>
-    </div>
-    <div class="stamp">
-      <span>Dados atualizados em <strong id="atualizado">–</strong></span>
-      <span id="cobertura">–</span>
+<div class="stickytop" id="stickytop">
+<header class="top"><div class="wrap top-in">
+  <img src="__LOGO__" alt="Grupo Dínamo · Tóliman Transportes">
+  <div class="rule"></div>
+  <div class="who">SASCAR Telemetry<b>Mudança de Configuração</b></div>
+  <nav><a href="#alertas">Alertas</a><a href="#graficos">Comandos e logins</a><a href="#movimentacoes">Movimentações</a></nav>
+</div></header>
+<div class="perbar"><div class="wrap">
+  <div class="perlinha">
+    <span class="perlab">Período</span>
+    <div class="modes light" id="periodos" role="group" aria-label="Selecionar período"></div>
+  </div>
+  <div class="perlinha">
+    <form class="flt" id="filtros" aria-label="Filtros">
+      <label for="f-de">De<input type="date" id="f-de"></label>
+      <label for="f-ate">Até<input type="date" id="f-ate"></label>
+      <label for="f-veiculo">Veículo<input type="search" id="f-veiculo" placeholder="Placa" autocomplete="off"></label>
+      <label for="f-comando">Comando<select id="f-comando"><option value="">Todos</option></select></label>
+      <label for="f-situacao">Situação<select id="f-situacao"><option value="">Todas</option></select></label>
+      <label for="f-responsavel">Usuário<select id="f-responsavel"><option value="">Todos</option></select></label>
+      <label for="f-login">Login<select id="f-login"><option value="">Todos</option></select></label>
+      <button type="reset" class="btn-l" id="limpar">Limpar filtros</button>
+    </form>
+  </div>
+</div></div>
+</div>
+
+<div class="hero"><div class="wrap hero-grid">
+  <div class="h-id">
+    <div class="eyebrow" id="h-periodo">Tóliman Transportes</div>
+    <h1>Mudança de<em>configuração</em></h1>
+    <p class="sub">Comandos de configuração enviados aos rastreadores da frota pelo portal SASCAR.</p>
+    <div class="bignum" id="kBig">0</div>
+    <div class="bigcap">Movimentações no período</div>
+    <div class="split">
+      <div><span id="hExec">0</span><small>executadas</small></div>
+      <div><span id="hExp">0</span><small>expiradas</small></div>
+      <div><span id="hVeic">0</span><small>veículos</small></div>
     </div>
   </div>
-</header>
-
-<main class="wrap">
-  <form class="filtros" id="filtros" aria-label="Filtros">
-    <div class="campo">
-      <label for="f-de">De</label>
-      <input type="date" id="f-de">
+  <div class="h-sem">
+    <div class="yard-head"><h3>Movimentações por dia</h3><p>Cada coluna é um dia; passe o mouse para ver o detalhe.</p></div>
+    <div id="g-dia"></div>
+    <div class="legend">
+      <span><i style="background:#98A6BC"></i>Executado</span>
+      <span><i style="background:var(--accent)"></i>Expirado</span>
+      <span><i style="background:var(--plum)"></i>Pendente</span>
     </div>
-    <div class="campo">
-      <label for="f-ate">Até</label>
-      <input type="date" id="f-ate">
-    </div>
-    <div class="periodo-rapido" role="group" aria-label="Período rápido">
-      <button type="button" class="btn" data-dias="7">7 dias</button>
-      <button type="button" class="btn" data-dias="30">30 dias</button>
-      <button type="button" class="btn" data-dias="0">Tudo</button>
-    </div>
-    <div class="campo">
-      <label for="f-veiculo">Veículo</label>
-      <input type="search" id="f-veiculo" placeholder="Placa" autocomplete="off">
-    </div>
-    <div class="campo">
-      <label for="f-comando">Comando</label>
-      <select id="f-comando"><option value="">Todos</option></select>
-    </div>
-    <div class="campo">
-      <label for="f-situacao">Situação</label>
-      <select id="f-situacao"><option value="">Todas</option></select>
-    </div>
-    <div class="campo">
-      <label for="f-responsavel">Usuário</label>
-      <select id="f-responsavel"><option value="">Todos</option></select>
-    </div>
-    <div class="campo">
-      <label for="f-login">Login</label>
-      <select id="f-login"><option value="">Todos</option></select>
-    </div>
-    <button type="reset" class="btn" id="limpar">Limpar filtros</button>
-  </form>
-
-  <section class="kpis" aria-label="Indicadores">
-    <div class="kpi"><span class="rotulo">Movimentações</span><span class="valor" id="k-total">–</span><span class="nota" id="k-total-nota">&nbsp;</span></div>
-    <div class="kpi ok"><span class="rotulo">Executadas</span><span class="valor" id="k-exec">–</span><span class="nota" id="k-exec-nota">&nbsp;</span></div>
-    <div class="kpi" id="k-falha-box"><span class="rotulo">Expiradas</span><span class="valor" id="k-falha">–</span><span class="nota" id="k-falha-nota">&nbsp;</span></div>
-    <div class="kpi" id="k-pend-box"><span class="rotulo">Pendentes</span><span class="valor" id="k-pend">–</span><span class="nota" id="k-pend-nota">&nbsp;</span></div>
-    <div class="kpi"><span class="rotulo">Tempo até executar</span><span class="valor" id="k-tempo">–</span><span class="nota">mediana entre envio e execução</span></div>
-    <div class="kpi"><span class="rotulo">Veículos</span><span class="valor" id="k-veic">–</span><span class="nota">com alguma mudança</span></div>
-  </section>
-
-  <section class="bloco" aria-labelledby="t-alertas">
-    <div class="bloco-topo">
-      <h2 id="t-alertas">Alertas</h2>
-      <span class="sub" id="alertas-conta">–</span>
-    </div>
-    <p class="sub" id="alertas-regra">–</p>
-    <ul class="alertas" id="alertas"></ul>
-  </section>
-
-  <div class="graficos">
-    <section class="bloco" aria-labelledby="t-dia">
-      <div class="bloco-topo">
-        <h2 id="t-dia">Movimentações por dia</h2>
-        <div class="legenda">
-          <span><i style="--c: var(--good)"></i>Executado</span>
-          <span><i style="--c: var(--critical)"></i>Expirado</span>
-          <span><i style="--c: var(--warning)"></i>Pendente</span>
-        </div>
-      </div>
-      <div class="grafico" id="g-dia"></div>
-    </section>
-    <section class="bloco" aria-labelledby="t-cmd">
-      <div class="bloco-topo">
-        <h2 id="t-cmd">Comandos mais enviados</h2>
-        <span class="sub">10 primeiros</span>
-      </div>
-      <div class="grafico" id="g-cmd"></div>
-    </section>
+    <p class="pnt-note" id="atualizado"></p>
   </div>
+</div></div>
 
-  <section class="bloco" aria-labelledby="t-resp">
-    <div class="bloco-topo">
-      <h2 id="t-resp">Por login</h2>
-      <span class="sub">quem solicitou as mudanças (login · usuário)</span>
-    </div>
-    <div class="grafico" id="g-resp"></div>
-  </section>
+<section id="alertas"><div class="wrap">
+  <div class="sec-head"><h2>Alertas</h2><p id="alertas-regra"></p><span class="tag" id="alertas-tag">0</span></div>
+  <div class="kpis">
+    <div class="kpi" id="kExpBox"><b id="kExp">0</b><u>Expiradas</u><i>não chegaram ao equipamento</i></div>
+    <div class="kpi" id="kPendBox"><b id="kPend">0</b><u>Pendentes atrasadas</u><i id="kPendNota"></i></div>
+    <div class="kpi ajuste"><b id="kAj">0</b><u>Ajustes de hodômetro/horímetro</u><i>executados ou não</i></div>
+    <div class="kpi"><b id="kTempo">–</b><u>Tempo até executar</u><i>mediana entre envio e execução</i></div>
+  </div>
+  <div class="card" style="margin-top:22px">
+    <div id="alertas-lista"></div>
+  </div>
+</div></section>
 
-  <section class="bloco" aria-labelledby="t-lista">
-    <div class="bloco-topo">
-      <h2 id="t-lista">Movimentações</h2>
-      <span class="sub" id="lista-conta">–</span>
-    </div>
-    <div class="tabela-rolagem">
+<section id="graficos" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><h2>Comandos e logins</h2><p>O que foi alterado e quem solicitou, no período e filtros escolhidos.</p></div>
+  <div class="grid2">
+    <div class="card"><div class="card-head"><div><h3>Comandos mais enviados</h3><p class="hint">Os 10 primeiros.</p></div></div><div id="g-cmd"></div></div>
+    <div class="card"><div class="card-head"><div><h3>Por login</h3><p class="hint">Vários logins usam o mesmo usuário do portal.</p></div></div><div id="g-resp"></div></div>
+  </div>
+</div></section>
+
+<section id="movimentacoes" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><h2>Movimentações</h2><p id="lista-conta"></p></div>
+  <div class="card">
+    <div class="lstbox">
       <table>
-        <thead>
-          <tr><th>Enviada em</th><th>Veículo</th><th>Comando</th><th>De → Para</th><th>Login</th><th>Situação</th><th>Levou</th></tr>
-        </thead>
+        <thead><tr><th>Enviada em</th><th>Veículo</th><th>Comando</th><th>De → Para</th><th>Login</th><th>Situação</th><th class="r">Levou</th></tr></thead>
         <tbody id="linhas"></tbody>
       </table>
     </div>
-    <div class="mais">
-      <button type="button" class="btn" id="mostrar-mais">Mostrar mais 100</button>
-    </div>
-  </section>
-</main>
+    <div class="mais"><button type="button" class="btn-l" id="mostrar-mais">Mostrar mais 100</button></div>
+  </div>
+</div></section>
 
-<footer class="wrap">
-  Fonte: relatório “Mudança de Configuração” do portal SASCAR Telemetry (Michelin Connected Fleet), coletado diariamente. Horários de Brasília.
-</footer>
+<footer><div class="wrap foot">
+  <img src="__LOGO_LIGHT__" alt="Grupo Dínamo · Tóliman Transportes">
+  <p>Coleta diária automática do relatório do portal, somada ao histórico já coletado. Horários de Brasília.
+    <span class="src">Relatório de origem · SASCAR Telemetry (Michelin Connected Fleet)</span>
+    <span class="rel" id="rodape-rel"><b>Mudança de Configuração</b></span></p>
+</div></footer>
 
 <script id="dados" type="application/json">__DADOS__</script>
+<script>
+/*__LAYOUT_JS__*/
+</script>
 <script>
 (() => {
   // Uma mudança sem execução há mais que isso vira alerta.
   const LIMITE_PENDENCIA_HORAS = 24;
-  const POR_PAGINA = 100;
   // Ajustes de hodômetro e horímetro sempre aparecem nos alertas, executados ou não.
   const COMANDOS_AJUSTE = /HOD[OÔ]METRO|HOR[IÍ]METRO/i;
+  const POR_PAGINA = 100;
   const FUSO = 'America/Sao_Paulo';
+  const COR = { executado: '#98A6BC', expirado: ACC, pendente: PLUM };
 
-  const base = JSON.parse(document.getElementById('dados').textContent);
+  const base = JSON.parse(g('dados').textContent);
   const agora = new Date(base.atualizadoEm);
   const fmtDataHora = new Intl.DateTimeFormat('pt-BR', { timeZone: FUSO, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  const fmtDiaCurto = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', day: '2-digit', month: '2-digit' });
-  const fmtDiaSemana = new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', weekday: 'short', day: '2-digit', month: '2-digit' });
-  const fmtNum = new Intl.NumberFormat('pt-BR');
-  const fmtPct = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 1 });
-
-  const diaLocal = (iso) => iso.slice(0, 10);
+  const fmtDia = (d) => `${d.slice(8, 10)}/${d.slice(5, 7)}`;
+  const fmtDiaLongo = (d) => `${Number(d.slice(8, 10))} de ${MESN[Number(d.slice(5, 7)) - 1]}`;
+  const fmtDelta = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1, signDisplay: 'exceptZero' });
   const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: FUSO }).format(agora);
 
   const movs = base.movimentacoes.map((m) => {
@@ -319,7 +162,7 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
     const tipo = sit.startsWith('execut') ? 'executado' : sit.startsWith('expir') ? 'expirado' : 'pendente';
     const horasAberta = (agora - enviada) / 36e5;
     return {
-      ...m, enviada, tipo, dia: diaLocal(m.data),
+      ...m, enviada, tipo, dia: m.data.slice(0, 10),
       quem: `${m.login || 'sem login'} · ${m.usuario}`,
       ajuste: COMANDOS_AJUSTE.test(m.comando),
       minutos: tipo === 'executado' && executada ? Math.max(0, (executada - enviada) / 6e4) : null,
@@ -327,18 +170,15 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
       horasAberta,
     };
   });
-
   const primeiroDia = movs.length ? movs.reduce((a, m) => (m.dia < a ? m.dia : a), movs[0].dia) : hoje;
-  document.getElementById('atualizado').textContent = fmtDataHora.format(agora);
-  document.getElementById('cobertura').textContent = `Histórico desde ${fmtDiaCurto.format(new Date(primeiroDia))}/${primeiroDia.slice(0, 4)} · ${fmtNum.format(movs.length)} movimentações`;
-  document.getElementById('alertas-regra').textContent = `Mudanças expiradas, pendentes há mais de ${LIMITE_PENDENCIA_HORAS} h e todo ajuste de hodômetro ou horímetro.`;
+
+  g('atualizado').innerHTML = `<strong>Dados atualizados em ${fmtDataHora.format(agora)}.</strong> Histórico desde ${fmtDia(primeiroDia)}/${primeiroDia.slice(0, 4)}, com ${nf(movs.length)} movimentações.`;
+  g('rodape-rel').innerHTML = `<b>Mudança de Configuração</b> · desde ${fmtDia(primeiroDia)}/${primeiroDia.slice(0, 4)} · ${nf(movs.length)} movimentações`;
+  g('alertas-regra').textContent = `Mudanças expiradas, pendentes há mais de ${LIMITE_PENDENCIA_HORAS} h e todo ajuste de hodômetro ou horímetro.`;
 
   // ---------- Filtros ----------
-  const el = (id) => document.getElementById(id);
-  const f = { de: el('f-de'), ate: el('f-ate'), veiculo: el('f-veiculo'), comando: el('f-comando'), situacao: el('f-situacao'), responsavel: el('f-responsavel'), login: el('f-login') };
-  const opcoes = (sel, valores) => {
-    [...new Set(valores)].sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((v) => sel.add(new Option(v, v)));
-  };
+  const f = { de: g('f-de'), ate: g('f-ate'), veiculo: g('f-veiculo'), comando: g('f-comando'), situacao: g('f-situacao'), responsavel: g('f-responsavel'), login: g('f-login') };
+  const opcoes = (sel, valores) => [...new Set(valores)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((v) => sel.add(new Option(v, v)));
   opcoes(f.comando, movs.map((m) => m.comando));
   opcoes(f.situacao, movs.map((m) => m.situacao));
   opcoes(f.responsavel, movs.map((m) => m.usuario));
@@ -347,13 +187,13 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
   f.de.max = f.ate.max = hoje;
 
   const somarDias = (dia, n) => { const d = new Date(dia + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
-  const botoesPeriodo = [...document.querySelectorAll('.periodo-rapido .btn')];
+  const PERIODOS = [['7', '7 dias'], ['30', '30 dias'], ['0', 'Todo o histórico']];
   const aplicarPeriodo = (dias) => {
     f.ate.value = hoje;
-    f.de.value = dias ? (somarDias(hoje, -(dias - 1)) < primeiroDia ? primeiroDia : somarDias(hoje, -(dias - 1))) : primeiroDia;
-    marcarPeriodo(dias);
+    const inicio = dias ? somarDias(hoje, -(dias - 1)) : primeiroDia;
+    f.de.value = inicio < primeiroDia ? primeiroDia : inicio;
   };
-  const marcarPeriodo = (dias) => botoesPeriodo.forEach((b) => b.setAttribute('aria-pressed', String(dias !== null && Number(b.dataset.dias) === dias)));
+  const desenharPeriodos = (atual) => modes(g('periodos'), PERIODOS, atual, (v) => { aplicarPeriodo(Number(v)); aoMudar(); });
 
   let pagina = 1;
   const filtrar = () => {
@@ -369,7 +209,6 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
   };
 
   // ---------- Formatação ----------
-  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const duracao = (min) => {
     if (min == null) return '–';
     if (min < 1) return '< 1 min';
@@ -383,183 +222,158 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
     const s = [...xs].sort((a, b) => a - b), k = Math.floor(s.length / 2);
     return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2;
   };
-  const placa = (p) => `<span class="placa" title="${esc(p)}"><span>${esc(p)}</span></span>`;
-  const pill = (m) => {
-    const extra = m.tipo === 'pendente' && m.atrasado ? ' atrasado' : '';
-    return `<span class="pill ${m.tipo}${extra}">${esc(m.situacao)}</span>`;
-  };
-  const valorTroca = (v) => (v === '' ? '—' : esc(v));
-
-  // ---------- Indicadores ----------
-  const indicadores = (lista) => {
-    const exec = lista.filter((m) => m.tipo === 'executado');
-    const exp = lista.filter((m) => m.tipo === 'expirado');
-    const pend = lista.filter((m) => m.tipo === 'pendente');
-    const atras = pend.filter((m) => m.atrasado);
-    const dias = new Set(lista.map((m) => m.dia)).size;
-    el('k-total').textContent = fmtNum.format(lista.length);
-    el('k-total-nota').textContent = dias ? `${fmtNum.format(Math.round(lista.length / dias))} por dia com movimento` : 'nenhuma no período';
-    el('k-exec').textContent = fmtNum.format(exec.length);
-    el('k-exec-nota').textContent = lista.length ? `${fmtPct.format(exec.length / lista.length)} do total` : '–';
-    el('k-falha').textContent = fmtNum.format(exp.length);
-    el('k-falha-nota').textContent = lista.length ? `${fmtPct.format(exp.length / lista.length)} não chegaram ao equipamento` : '–';
-    el('k-falha-box').classList.toggle('atencao', exp.length > 0);
-    el('k-pend').textContent = fmtNum.format(pend.length);
-    el('k-pend-nota').textContent = atras.length ? `${fmtNum.format(atras.length)} há mais de ${LIMITE_PENDENCIA_HORAS} h` : 'nenhuma atrasada';
-    el('k-pend-box').classList.toggle('atencao', atras.length > 0);
-    el('k-tempo').textContent = duracao(mediana(exec.map((m) => m.minutos).filter((x) => x != null)));
-    el('k-veic').textContent = fmtNum.format(new Set(lista.map((m) => m.veiculo)).size);
-  };
-
-  // ---------- Alertas ----------
-  // Diferença do ajuste: hodômetro em km, horímetro em minutos.
-  const fmtDelta = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1, signDisplay: 'exceptZero' });
+  const valor = (v) => (v === '' ? '—' : esc(v));
+  const situacao = (m) => `<span class="st ${m.tipo === 'executado' ? 'ok' : m.tipo === 'expirado' ? 'exp' : 'pend'}">${esc(m.situacao)}</span>`;
   const diferenca = (m) => {
     const a = parseFloat(String(m.valorAnterior).replace(',', '.')), b = parseFloat(String(m.valorAtual).replace(',', '.'));
     if (!isFinite(a) || !isFinite(b)) return '';
     return `${fmtDelta.format(b - a)} ${/HOR[IÍ]METRO/i.test(m.comando) ? 'min' : 'km'}`;
   };
-  const alertas = (lista) => {
-    const itens = lista.filter((m) => m.tipo === 'expirado' || m.atrasado || m.ajuste).sort((a, b) => b.enviada - a.enviada);
-    const ul = el('alertas');
-    const nExp = itens.filter((m) => m.tipo === 'expirado').length;
-    const nPend = itens.filter((m) => m.atrasado).length;
-    const nAj = itens.filter((m) => m.ajuste).length;
-    el('alertas-conta').textContent = `${fmtNum.format(nExp)} expiradas · ${fmtNum.format(nPend)} atrasadas · ${fmtNum.format(nAj)} ajustes de hodômetro/horímetro`;
-    if (!itens.length) { ul.innerHTML = '<li class="vazio">Nenhum alerta no período filtrado.</li>'; return; }
-    ul.innerHTML = itens.map((m) => `
-      <li class="alerta ${m.tipo === 'expirado' ? 'expirado' : m.atrasado ? 'pendente' : 'ajuste'}">
-        ${m.ajuste && m.tipo !== 'expirado' && !m.atrasado ? '<span class="pill ajuste">Ajuste</span>' : pill(m)}
-        ${placa(m.veiculo)}
-        <div class="cmd">${esc(m.comando)}${m.ajuste ? ` <span class="delta num">${diferenca(m)}</span>` : ''}<small>${valorTroca(m.valorAnterior)} → ${valorTroca(m.valorAtual)} · ${esc(m.quem)}${m.ajuste && m.tipo !== 'expirado' ? ' · ' + esc(m.situacao) : ''}</small></div>
-        <div class="quando num">Enviada ${fmtDataHora.format(m.enviada)}${m.tipo === 'pendente' ? ` · aberta há ${duracao(m.horasAberta * 60)}` : ''}</div>
-      </li>`).join('');
+  const troca = (m) => `<span class="troca">${valor(m.valorAnterior)} → <b>${valor(m.valorAtual)}</b>${m.medida && m.medida !== 'N/A' && !m.ajuste ? ' ' + esc(m.medida) : ''}</span>${m.ajuste ? `<span class="delta">${diferenca(m)}</span>` : ''}`;
+  const login = (m) => `${esc(m.login || '–')}<small class="u">${esc(m.usuario)}</small>`;
+
+  // ---------- Hero ----------
+  const hero = (lista) => {
+    const de = f.de.value || primeiroDia, ate = f.ate.value || hoje;
+    g('h-periodo').textContent = `Tóliman Transportes · ${fmtDiaLongo(de)} a ${fmtDiaLongo(ate)}`;
+    const exp = lista.filter((m) => m.tipo === 'expirado').length;
+    g('kBig').innerHTML = nf(lista.length);
+    g('hExec').textContent = nf(lista.filter((m) => m.tipo === 'executado').length);
+    g('hExp').innerHTML = exp ? `<span style="color:var(--accent)">${nf(exp)}</span>` : '0';
+    g('hVeic').textContent = nf(new Set(lista.map((m) => m.veiculo)).size);
   };
 
-  // ---------- Gráficos ----------
-  const NS = 'http://www.w3.org/2000/svg';
-  const dica = (box) => {
-    let d = box.querySelector('.dica');
-    if (!d) { d = document.createElement('div'); d.className = 'dica'; d.hidden = true; box.appendChild(d); }
-    return d;
-  };
-  const mostrarDica = (box, html, x, y) => { const d = dica(box); d.innerHTML = html; d.style.left = x + 'px'; d.style.top = y + 'px'; d.hidden = false; };
-  const esconderDica = (box) => { dica(box).hidden = true; };
-  const passo = (max) => {
-    const bruto = max / 4, mag = 10 ** Math.floor(Math.log10(bruto || 1));
-    return [1, 2, 5, 10].map((k) => k * mag).find((s) => s >= bruto) || mag;
-  };
-  // Barra com topo arredondado (4px) apoiada na base.
-  const barraTopo = (x, y, w, h, r) => {
-    r = Math.min(r, w / 2, h);
-    return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
-  };
-
+  // ---------- Gráfico diário (no hero) ----------
   const graficoDia = (lista) => {
-    const box = el('g-dia');
+    const box = g('g-dia');
     const de = f.de.value || primeiroDia, ate = f.ate.value || hoje;
     const dias = [];
     for (let d = de; d <= ate && dias.length < 400; d = somarDias(d, 1)) dias.push(d);
     const porDia = new Map(dias.map((d) => [d, { executado: 0, expirado: 0, pendente: 0 }]));
     lista.forEach((m) => { const c = porDia.get(m.dia); if (c) c[m.tipo]++; });
-    const W = 640, H = 240, ml = 36, mr = 8, mt = 10, mb = 26;
-    const iw = W - ml - mr, ih = H - mt - mb;
+    const W = 720, H = 230, ml = 34, mr = 6, mt = 8, mb = 22, iw = W - ml - mr, ih = H - mt - mb;
     const max = Math.max(1, ...[...porDia.values()].map((c) => c.executado + c.expirado + c.pendente));
-    const s = passo(max), topo = Math.ceil(max / s) * s;
+    const bruto = max / 4, mag = 10 ** Math.floor(Math.log10(bruto || 1));
+    const passo = [1, 2, 5, 10].map((k) => k * mag).find((s) => s >= bruto) || mag;
+    const topo = Math.ceil(max / passo) * passo;
     const y = (v) => mt + ih - (v / topo) * ih;
-    const bw = iw / Math.max(1, dias.length);
-    const gap = Math.min(2, bw * 0.2);
-    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Movimentações por dia, empilhadas por situação">`;
-    for (let v = 0; v <= topo; v += s) svg += `<line class="${v ? 'grade' : 'eixo'}" x1="${ml}" x2="${W - mr}" y1="${y(v)}" y2="${y(v)}"/><text x="${ml - 6}" y="${y(v) + 4}" text-anchor="end">${fmtNum.format(v)}</text>`;
+    const bw = iw / Math.max(1, dias.length), gap = Math.min(3, bw * 0.25);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Movimentações por dia, por situação">`;
+    for (let v = 0; v <= topo; v += passo) svg += `<line class="gl" x1="${ml}" x2="${W - mr}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${ml - 6}" y="${y(v) + 3}" text-anchor="end">${nf(v)}</text>`;
     const cada = Math.max(1, Math.ceil(dias.length / 8));
     dias.forEach((d, i) => {
       const c = porDia.get(d), x = ml + i * bw + gap / 2, w = Math.max(1, bw - gap);
       let acum = 0;
-      const pilha = [['executado', 'var(--good)'], ['expirado', 'var(--critical)'], ['pendente', 'var(--warning)']].filter(([k]) => c[k]);
-      pilha.forEach(([k, cor], j) => {
+      ['executado', 'expirado', 'pendente'].forEach((k) => {
+        if (!c[k]) return;
         const y0 = y(acum + c[k]), h = y(acum) - y0;
-        const ultimo = j === pilha.length - 1;
-        const hVis = Math.max(0, h - (j ? 1 : 0));
-        svg += ultimo ? `<path d="${barraTopo(x, y0, w, hVis, 4)}" fill="${cor}"/>` : `<rect x="${x}" y="${y0 + 1}" width="${w}" height="${Math.max(0, h - 1 - (j ? 1 : 0))}" fill="${cor}"/>`;
+        // 1px de folga entre segmentos empilhados.
+        svg += `<rect x="${x}" y="${y0}" width="${w}" height="${Math.max(1, h - (acum ? 1 : 0))}" fill="${COR[k]}"/>`;
         acum += c[k];
       });
-      if (i % cada === 0) svg += `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle">${fmtDiaCurto.format(new Date(d))}</text>`;
-      svg += `<rect class="alvo" data-i="${i}" x="${ml + i * bw}" y="${mt}" width="${bw}" height="${ih}" fill="transparent"/>`;
+      if (i % cada === 0) svg += `<text class="ax" x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${fmtDia(d)}</text>`;
+      svg += `<rect class="dia-hit" data-i="${i}" x="${ml + i * bw}" y="${mt}" width="${bw}" height="${ih}" fill="transparent"/>`;
     });
-    svg += '</svg>';
-    box.innerHTML = svg;
-    box.querySelectorAll('.alvo').forEach((r) => {
-      const d = dias[Number(r.dataset.i)], c = porDia.get(d), total = c.executado + c.expirado + c.pendente;
-      const mostrar = () => {
-        const rb = r.getBoundingClientRect(), bb = box.getBoundingClientRect();
-        const xm = Math.min(Math.max(rb.left - bb.left + rb.width / 2, 90), bb.width - 90);
-        const yTopo = y(total) / H * box.querySelector('svg').getBoundingClientRect().height;
-        mostrarDica(box, `<b>${fmtDiaSemana.format(new Date(d))}</b> · ${fmtNum.format(total)}<br>Executado ${c.executado} · Expirado ${c.expirado} · Pendente ${c.pendente}`, xm, yTopo);
-      };
-      r.addEventListener('mouseenter', mostrar);
-      r.addEventListener('click', mostrar);
-      r.addEventListener('mouseleave', () => esconderDica(box));
+    box.innerHTML = svg + '</svg>';
+    box.querySelectorAll('.dia-hit').forEach((r) => {
+      const d = dias[Number(r.dataset.i)], c = porDia.get(d);
+      bindTip(r, `<b>${fmtDiaLongo(d)}</b>${nf(c.executado + c.expirado + c.pendente)} movimentações<br><span>Executado ${nf(c.executado)} · Expirado ${nf(c.expirado)} · Pendente ${nf(c.pendente)}</span>`);
     });
   };
 
-  // Barras horizontais em HTML: o texto mantém o tamanho em qualquer largura.
-  const graficoBarras = (boxId, pares, rotuloAria) => {
-    const box = el(boxId);
-    if (!pares.length) { box.innerHTML = '<p class="vazio">Sem dados no período filtrado.</p>'; return; }
-    const max = Math.max(...pares.map(([, v]) => v));
-    const total = pares.reduce((a, [, v]) => a + v, 0);
-    box.innerHTML = `<ul class="barras" aria-label="${esc(rotuloAria)}">` + pares.map(([nome, v]) => `
-      <li title="${esc(nome)}: ${fmtNum.format(v)} (${fmtPct.format(v / total)})">
-        <span class="barras-nome">${esc(nome)}</span>
-        <span class="barras-trilho"><span class="barras-barra" style="width:${Math.max(0.5, (v / max) * 100)}%"></span><span class="barras-valor num">${fmtNum.format(v)}</span></span>
-      </li>`).join('') + '</ul>';
+  // ---------- Alertas ----------
+  const alertas = (lista) => {
+    const exec = lista.filter((m) => m.tipo === 'executado');
+    const exp = lista.filter((m) => m.tipo === 'expirado');
+    const pend = lista.filter((m) => m.tipo === 'pendente');
+    const atras = pend.filter((m) => m.atrasado);
+    const aj = lista.filter((m) => m.ajuste);
+    g('kExp').textContent = nf(exp.length);
+    g('kExpBox').classList.toggle('alerta', exp.length > 0);
+    g('kPend').textContent = nf(atras.length);
+    g('kPendBox').classList.toggle('alerta', atras.length > 0);
+    g('kPendNota').textContent = pend.length ? `${nf(pend.length)} pendentes no total` : 'nenhuma pendente';
+    g('kAj').textContent = nf(aj.length);
+    g('kTempo').textContent = duracao(mediana(exec.map((m) => m.minutos).filter((x) => x != null)));
+
+    const itens = lista.filter((m) => m.tipo === 'expirado' || m.atrasado || m.ajuste).sort((a, b) => b.enviada - a.enviada);
+    g('alertas-tag').textContent = `${nf(itens.length)} ${itens.length === 1 ? 'alerta' : 'alertas'}`;
+    const box = g('alertas-lista');
+    if (!itens.length) {
+      box.innerHTML = '<div class="limpo"><b>Nenhum alerta</b><p>Nenhuma mudança expirada, atrasada ou de hodômetro/horímetro no período e filtros escolhidos.</p></div>';
+      return;
+    }
+    const motivo = (m) => m.tipo === 'expirado' ? '<span class="pill">Expirado</span>'
+      : m.atrasado ? `<span class="pill">Pendente &gt; ${LIMITE_PENDENCIA_HORAS} h</span>`
+      : '<span class="pill aj">Ajuste</span>';
+    box.innerHTML = `<div class="lstbox" style="max-height:420px"><table>
+      <thead><tr><th>Alerta</th><th>Enviada em</th><th>Veículo</th><th>Comando</th><th>De → Para</th><th>Login</th><th>Situação</th></tr></thead>
+      <tbody>${itens.map((m) => `<tr>
+        <td>${motivo(m)}</td>
+        <td class="mono">${fmtDataHora.format(m.enviada)}</td>
+        <td><span class="placa">${esc(m.veiculo)}</span></td>
+        <td>${esc(m.comando)}</td>
+        <td>${troca(m)}</td>
+        <td>${login(m)}</td>
+        <td>${situacao(m)}${m.tipo === 'pendente' ? `<small class="u">aberta há ${duracao(m.horasAberta * 60)}</small>` : ''}</td>
+      </tr>`).join('')}</tbody></table></div>`;
   };
 
+  // ---------- Barras ----------
   const contar = (lista, campo) => {
     const c = new Map();
     lista.forEach((m) => c.set(m[campo], (c.get(m[campo]) || 0) + 1));
     return [...c.entries()].sort((a, b) => b[1] - a[1]);
+  };
+  const graficoBarras = (id, pares, total, divide) => {
+    const box = g(id);
+    if (!pares.length) { box.innerHTML = '<p class="hint">Sem dados no período filtrado.</p>'; return; }
+    barras(box, pares.map(([nm, v]) => {
+      const [nome, sub] = divide ? nm.split(' · ') : [nm, ''];
+      return { nm: nome, sub, v, pc: (v / total) * 100, cls: 's20', tip: `<b>${esc(nm)}</b>${nf(v)} movimentações` };
+    }));
   };
 
   // ---------- Tabela ----------
   const tabela = (lista) => {
     const ordenada = [...lista].sort((a, b) => b.enviada - a.enviada);
     const visiveis = ordenada.slice(0, pagina * POR_PAGINA);
-    el('linhas').innerHTML = visiveis.length ? visiveis.map((m) => `
-      <tr>
-        <td class="num">${fmtDataHora.format(m.enviada)}</td>
-        <td>${placa(m.veiculo)}</td>
-        <td class="cmd">${esc(m.comando)}</td>
-        <td class="troca">${valorTroca(m.valorAnterior)} → <b>${valorTroca(m.valorAtual)}</b>${m.medida && m.medida !== 'N/A' ? ' ' + esc(m.medida) : ''}</td>
-        <td><b>${esc(m.login || '–')}</b><small class="usuario">${esc(m.usuario)}</small></td>
-        <td>${pill(m)}</td>
-        <td class="num">${m.tipo === 'executado' ? duracao(m.minutos) : m.tipo === 'pendente' ? 'aberta há ' + duracao(m.horasAberta * 60) : '–'}</td>
-      </tr>`).join('') : '<tr><td colspan="7" class="vazio">Nenhuma movimentação com esses filtros.</td></tr>';
-    el('lista-conta').textContent = `Mostrando ${fmtNum.format(visiveis.length)} de ${fmtNum.format(ordenada.length)}`;
-    el('mostrar-mais').hidden = visiveis.length >= ordenada.length;
+    g('linhas').innerHTML = visiveis.length ? visiveis.map((m) => `<tr>
+      <td class="mono">${fmtDataHora.format(m.enviada)}</td>
+      <td><span class="placa">${esc(m.veiculo)}</span></td>
+      <td>${esc(m.comando)}</td>
+      <td>${troca(m)}</td>
+      <td>${login(m)}</td>
+      <td>${situacao(m)}</td>
+      <td class="r mono">${m.tipo === 'executado' ? duracao(m.minutos) : m.tipo === 'pendente' ? 'aberta há ' + duracao(m.horasAberta * 60) : '–'}</td>
+    </tr>`).join('') : '<tr><td colspan="7">Nenhuma movimentação com esses filtros.</td></tr>';
+    g('lista-conta').textContent = `Mostrando ${nf(visiveis.length)} de ${nf(ordenada.length)}, das mais recentes para as mais antigas.`;
+    g('mostrar-mais').hidden = visiveis.length >= ordenada.length;
   };
 
   const atualizar = () => {
     const lista = filtrar();
-    indicadores(lista);
-    alertas(lista);
+    hero(lista);
     graficoDia(lista);
-    graficoBarras('g-cmd', contar(lista, 'comando').slice(0, 10), 'Comandos mais enviados');
-    graficoBarras('g-resp', contar(lista, 'quem'), 'Movimentações por login');
+    alertas(lista);
+    graficoBarras('g-cmd', contar(lista, 'comando').slice(0, 10), lista.length, false);
+    graficoBarras('g-resp', contar(lista, 'quem'), lista.length, true);
     tabela(lista);
   };
 
   // ---------- Eventos ----------
-  const aoMudar = () => { pagina = 1; atualizar(); };
+  function aoMudar() { pagina = 1; atualizar(); }
   [f.comando, f.situacao, f.responsavel, f.login].forEach((s) => s.addEventListener('change', aoMudar));
   f.veiculo.addEventListener('input', aoMudar);
-  [f.de, f.ate].forEach((d) => d.addEventListener('change', () => { marcarPeriodo(null); aoMudar(); }));
-  botoesPeriodo.forEach((b) => b.addEventListener('click', () => { aplicarPeriodo(Number(b.dataset.dias)); aoMudar(); }));
-  el('filtros').addEventListener('reset', () => setTimeout(() => { aplicarPeriodo(30); aoMudar(); }));
-  el('filtros').addEventListener('submit', (e) => e.preventDefault());
-  el('mostrar-mais').addEventListener('click', () => { pagina++; tabela(filtrar()); });
+  [f.de, f.ate].forEach((d) => d.addEventListener('change', () => { desenharPeriodos(null); aoMudar(); }));
+  g('filtros').addEventListener('reset', () => setTimeout(() => { aplicarPeriodo(30); desenharPeriodos('30'); aoMudar(); }));
+  g('filtros').addEventListener('submit', (e) => e.preventDefault());
+  g('mostrar-mais').addEventListener('click', () => { pagina++; tabela(filtrar()); });
 
   aplicarPeriodo(30);
+  desenharPeriodos('30');
   atualizar();
+  reveal();
 })();
 </script>
+</body></html>
