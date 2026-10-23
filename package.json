@@ -1,0 +1,15 @@
+{
+  "name": "sascar-mudanca-de-configuracao",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Painel de acompanhamento das movimentações do relatório Mudança de Configuração (SASCAR)",
+  "scripts": {
+    "coletar": "node src/coletar.js",
+    "painel": "node src/gerar-painel.js",
+    "atualizar": "node src/coletar.js && node src/gerar-painel.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "playwright": "1.63.0"
+  }
+}

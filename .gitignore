@@ -1,0 +1,5 @@
+node_modules/
+tmp/
+# Dados coletados do portal: fora do git até decisão do responsável.
+dados/
+painel.html
