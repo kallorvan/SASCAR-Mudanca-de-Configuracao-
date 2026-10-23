@@ -94,9 +94,13 @@ input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px s
 .sub { color: var(--ink-3); font-size: 0.85rem; }
 
 /* Alertas */
-.alertas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 340px; overflow-y: auto; }
-.alerta { display: grid; grid-template-columns: auto auto 1fr auto; gap: 4px 14px; align-items: center; padding: 8px 12px; border: 1px solid var(--line); border-left: 4px solid var(--critical); border-radius: 6px; }
+.alertas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 420px; overflow-y: auto; }
+.alerta { display: grid; grid-template-columns: 88px auto 1fr auto; gap: 4px 14px; align-items: center; padding: 8px 12px; border: 1px solid var(--line); border-left: 4px solid var(--critical); border-radius: 6px; }
 .alerta.pendente { border-left-color: var(--serious); }
+.alerta.ajuste { border-left-color: var(--warning); }
+.pill.ajuste { --dot: var(--warning); color: var(--serious-ink); }
+.delta { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; margin-left: 6px; }
+#alertas-regra { margin: -6px 0 0; }
 .alerta .cmd { min-width: 0; }
 .alerta .cmd small { display: block; color: var(--ink-3); }
 .alerta .quando { color: var(--ink-2); font-size: 0.85rem; text-align: right; }
@@ -144,6 +148,8 @@ th { z-index: 1; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: upp
 td.cmd { max-width: 340px; }
 .troca { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-2); white-space: nowrap; }
 .troca b { color: var(--ink); font-weight: 700; }
+small.usuario { display: block; color: var(--ink-3); font-size: 0.78rem; }
+td b { font-weight: 600; }
 tbody tr:hover { background: var(--bg); }
 .mais { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 
@@ -205,8 +211,12 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
       <select id="f-situacao"><option value="">Todas</option></select>
     </div>
     <div class="campo">
-      <label for="f-responsavel">Responsável</label>
+      <label for="f-responsavel">Usuário</label>
       <select id="f-responsavel"><option value="">Todos</option></select>
+    </div>
+    <div class="campo">
+      <label for="f-login">Login</label>
+      <select id="f-login"><option value="">Todos</option></select>
     </div>
     <button type="reset" class="btn" id="limpar">Limpar filtros</button>
   </form>
@@ -222,9 +232,10 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
 
   <section class="bloco" aria-labelledby="t-alertas">
     <div class="bloco-topo">
-      <h2 id="t-alertas">Alertas de pendência</h2>
-      <span class="sub" id="alertas-regra">–</span>
+      <h2 id="t-alertas">Alertas</h2>
+      <span class="sub" id="alertas-conta">–</span>
     </div>
+    <p class="sub" id="alertas-regra">–</p>
     <ul class="alertas" id="alertas"></ul>
   </section>
 
@@ -251,8 +262,8 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
 
   <section class="bloco" aria-labelledby="t-resp">
     <div class="bloco-topo">
-      <h2 id="t-resp">Por responsável</h2>
-      <span class="sub">quem solicitou as mudanças</span>
+      <h2 id="t-resp">Por login</h2>
+      <span class="sub">quem solicitou as mudanças (login · usuário)</span>
     </div>
     <div class="grafico" id="g-resp"></div>
   </section>
@@ -265,7 +276,7 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
     <div class="tabela-rolagem">
       <table>
         <thead>
-          <tr><th>Enviada em</th><th>Veículo</th><th>Comando</th><th>De → Para</th><th>Responsável</th><th>Situação</th><th>Levou</th></tr>
+          <tr><th>Enviada em</th><th>Veículo</th><th>Comando</th><th>De → Para</th><th>Login</th><th>Situação</th><th>Levou</th></tr>
         </thead>
         <tbody id="linhas"></tbody>
       </table>
@@ -286,6 +297,8 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
   // Uma mudança sem execução há mais que isso vira alerta.
   const LIMITE_PENDENCIA_HORAS = 24;
   const POR_PAGINA = 100;
+  // Ajustes de hodômetro e horímetro sempre aparecem nos alertas, executados ou não.
+  const COMANDOS_AJUSTE = /HOD[OÔ]METRO|HOR[IÍ]METRO/i;
   const FUSO = 'America/Sao_Paulo';
 
   const base = JSON.parse(document.getElementById('dados').textContent);
@@ -307,6 +320,8 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
     const horasAberta = (agora - enviada) / 36e5;
     return {
       ...m, enviada, tipo, dia: diaLocal(m.data),
+      quem: `${m.login || 'sem login'} · ${m.usuario}`,
+      ajuste: COMANDOS_AJUSTE.test(m.comando),
       minutos: tipo === 'executado' && executada ? Math.max(0, (executada - enviada) / 6e4) : null,
       atrasado: tipo === 'pendente' && horasAberta > LIMITE_PENDENCIA_HORAS,
       horasAberta,
@@ -316,17 +331,18 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
   const primeiroDia = movs.length ? movs.reduce((a, m) => (m.dia < a ? m.dia : a), movs[0].dia) : hoje;
   document.getElementById('atualizado').textContent = fmtDataHora.format(agora);
   document.getElementById('cobertura').textContent = `Histórico desde ${fmtDiaCurto.format(new Date(primeiroDia))}/${primeiroDia.slice(0, 4)} · ${fmtNum.format(movs.length)} movimentações`;
-  document.getElementById('alertas-regra').textContent = `Expiradas e pendentes há mais de ${LIMITE_PENDENCIA_HORAS} h`;
+  document.getElementById('alertas-regra').textContent = `Mudanças expiradas, pendentes há mais de ${LIMITE_PENDENCIA_HORAS} h e todo ajuste de hodômetro ou horímetro.`;
 
   // ---------- Filtros ----------
   const el = (id) => document.getElementById(id);
-  const f = { de: el('f-de'), ate: el('f-ate'), veiculo: el('f-veiculo'), comando: el('f-comando'), situacao: el('f-situacao'), responsavel: el('f-responsavel') };
+  const f = { de: el('f-de'), ate: el('f-ate'), veiculo: el('f-veiculo'), comando: el('f-comando'), situacao: el('f-situacao'), responsavel: el('f-responsavel'), login: el('f-login') };
   const opcoes = (sel, valores) => {
     [...new Set(valores)].sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((v) => sel.add(new Option(v, v)));
   };
   opcoes(f.comando, movs.map((m) => m.comando));
   opcoes(f.situacao, movs.map((m) => m.situacao));
   opcoes(f.responsavel, movs.map((m) => m.usuario));
+  opcoes(f.login, movs.map((m) => m.login));
   f.de.min = f.ate.min = primeiroDia;
   f.de.max = f.ate.max = hoje;
 
@@ -348,7 +364,8 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
       (!placa || m.veiculo.toUpperCase().replace(/[^A-Z0-9]/g, '').includes(placa)) &&
       (!f.comando.value || m.comando === f.comando.value) &&
       (!f.situacao.value || m.situacao === f.situacao.value) &&
-      (!f.responsavel.value || m.usuario === f.responsavel.value));
+      (!f.responsavel.value || m.usuario === f.responsavel.value) &&
+      (!f.login.value || m.login === f.login.value));
   };
 
   // ---------- Formatação ----------
@@ -395,15 +412,26 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
   };
 
   // ---------- Alertas ----------
+  // Diferença do ajuste: hodômetro em km, horímetro em minutos.
+  const fmtDelta = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1, signDisplay: 'exceptZero' });
+  const diferenca = (m) => {
+    const a = parseFloat(String(m.valorAnterior).replace(',', '.')), b = parseFloat(String(m.valorAtual).replace(',', '.'));
+    if (!isFinite(a) || !isFinite(b)) return '';
+    return `${fmtDelta.format(b - a)} ${/HOR[IÍ]METRO/i.test(m.comando) ? 'min' : 'km'}`;
+  };
   const alertas = (lista) => {
-    const itens = lista.filter((m) => m.tipo === 'expirado' || m.atrasado).sort((a, b) => b.enviada - a.enviada);
+    const itens = lista.filter((m) => m.tipo === 'expirado' || m.atrasado || m.ajuste).sort((a, b) => b.enviada - a.enviada);
     const ul = el('alertas');
-    if (!itens.length) { ul.innerHTML = '<li class="vazio">Nenhuma mudança expirada ou atrasada no período filtrado.</li>'; return; }
+    const nExp = itens.filter((m) => m.tipo === 'expirado').length;
+    const nPend = itens.filter((m) => m.atrasado).length;
+    const nAj = itens.filter((m) => m.ajuste).length;
+    el('alertas-conta').textContent = `${fmtNum.format(nExp)} expiradas · ${fmtNum.format(nPend)} atrasadas · ${fmtNum.format(nAj)} ajustes de hodômetro/horímetro`;
+    if (!itens.length) { ul.innerHTML = '<li class="vazio">Nenhum alerta no período filtrado.</li>'; return; }
     ul.innerHTML = itens.map((m) => `
-      <li class="alerta ${m.tipo === 'expirado' ? 'expirado' : 'pendente'}">
-        ${pill(m)}
+      <li class="alerta ${m.tipo === 'expirado' ? 'expirado' : m.atrasado ? 'pendente' : 'ajuste'}">
+        ${m.ajuste && m.tipo !== 'expirado' && !m.atrasado ? '<span class="pill ajuste">Ajuste</span>' : pill(m)}
         ${placa(m.veiculo)}
-        <div class="cmd">${esc(m.comando)}<small>${valorTroca(m.valorAnterior)} → ${valorTroca(m.valorAtual)} · ${esc(m.usuario)}</small></div>
+        <div class="cmd">${esc(m.comando)}${m.ajuste ? ` <span class="delta num">${diferenca(m)}</span>` : ''}<small>${valorTroca(m.valorAnterior)} → ${valorTroca(m.valorAtual)} · ${esc(m.quem)}${m.ajuste && m.tipo !== 'expirado' ? ' · ' + esc(m.situacao) : ''}</small></div>
         <div class="quando num">Enviada ${fmtDataHora.format(m.enviada)}${m.tipo === 'pendente' ? ` · aberta há ${duracao(m.horasAberta * 60)}` : ''}</div>
       </li>`).join('');
   };
@@ -503,7 +531,7 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
         <td>${placa(m.veiculo)}</td>
         <td class="cmd">${esc(m.comando)}</td>
         <td class="troca">${valorTroca(m.valorAnterior)} → <b>${valorTroca(m.valorAtual)}</b>${m.medida && m.medida !== 'N/A' ? ' ' + esc(m.medida) : ''}</td>
-        <td>${esc(m.usuario)}</td>
+        <td><b>${esc(m.login || '–')}</b><small class="usuario">${esc(m.usuario)}</small></td>
         <td>${pill(m)}</td>
         <td class="num">${m.tipo === 'executado' ? duracao(m.minutos) : m.tipo === 'pendente' ? 'aberta há ' + duracao(m.horasAberta * 60) : '–'}</td>
       </tr>`).join('') : '<tr><td colspan="7" class="vazio">Nenhuma movimentação com esses filtros.</td></tr>';
@@ -517,13 +545,13 @@ footer.wrap { padding-block: 0 32px; color: var(--ink-3); font-size: 0.82rem; }
     alertas(lista);
     graficoDia(lista);
     graficoBarras('g-cmd', contar(lista, 'comando').slice(0, 10), 'Comandos mais enviados');
-    graficoBarras('g-resp', contar(lista, 'usuario'), 'Movimentações por responsável');
+    graficoBarras('g-resp', contar(lista, 'quem'), 'Movimentações por login');
     tabela(lista);
   };
 
   // ---------- Eventos ----------
   const aoMudar = () => { pagina = 1; atualizar(); };
-  [f.comando, f.situacao, f.responsavel].forEach((s) => s.addEventListener('change', aoMudar));
+  [f.comando, f.situacao, f.responsavel, f.login].forEach((s) => s.addEventListener('change', aoMudar));
   f.veiculo.addEventListener('input', aoMudar);
   [f.de, f.ate].forEach((d) => d.addEventListener('change', () => { marcarPeriodo(null); aoMudar(); }));
   botoesPeriodo.forEach((b) => b.addEventListener('click', () => { aplicarPeriodo(Number(b.dataset.dias)); aoMudar(); }));

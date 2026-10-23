@@ -9,7 +9,7 @@ const MODELO = path.join(__dirname, 'painel.template.html');
 const SAIDA = path.join(RAIZ, 'painel.html');
 
 // Só os campos que o painel usa, para manter o arquivo leve.
-const CAMPOS = ['data', 'veiculo', 'comando', 'valorAnterior', 'valorAtual', 'medida', 'usuario', 'situacao', 'dataSituacao'];
+const CAMPOS = ['data', 'veiculo', 'comando', 'valorAnterior', 'valorAtual', 'medida', 'usuario', 'login', 'situacao', 'dataSituacao'];
 
 function gerarPainel(dados, modelo) {
   const enxuto = {
