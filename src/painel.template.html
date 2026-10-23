@@ -34,36 +34,36 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
 .mais{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:12.5px;color:var(--steel)}
 .dia-hit{cursor:pointer}
 /* Calendário de período */
-.cal-pick{position:relative}
-.cal-btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--navy);background:#F6F8FB;border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer;min-height:32px}
-.cal-btn::before{content:"";width:13px;height:12px;border:1.5px solid var(--navy);border-top-width:3px;border-radius:1px;flex:none}
-.cal-btn::after{content:"▾";color:var(--steel);font-size:10px}
-.cal-btn:hover,.cal-btn[aria-expanded="true"]{border-color:var(--navy)}
-.cal-btn:focus-visible,.cal-seta:focus-visible,.cal-d:focus-visible,.cal-atalhos button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
-.cal-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:80;background:var(--card);border:1px solid var(--line);box-shadow:0 12px 32px rgba(11,23,48,.16);padding:14px 16px;width:max-content;max-width:calc(100vw - 32px)}
-.cal-nav{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.cal-dica{flex:1;text-align:center;font-size:12px;color:var(--steel)}
-.cal-seta{font-size:18px;line-height:1;width:30px;height:30px;border:1px solid var(--line);background:#F6F8FB;color:var(--navy);border-radius:2px;cursor:pointer}
-.cal-seta:disabled{opacity:.35;cursor:default}
-.cal-meses{display:flex;gap:22px;flex-wrap:wrap}
-.cal-mes h4{margin:0 0 8px;font-family:var(--disp);font-size:15px;font-weight:600;text-transform:uppercase;color:var(--navy);letter-spacing:.02em}
-.cal-g{display:grid;grid-template-columns:repeat(7,34px);gap:2px}
-.cal-sem{font-family:var(--mono);font-size:9px;letter-spacing:.08em;color:var(--steel-l);text-align:center;padding-bottom:3px}
-.cal-d{position:relative;height:34px;border:0;border-radius:2px;background:transparent;font-family:var(--mono);font-size:12px;color:var(--ink);cursor:pointer;padding:0}
-.cal-d:hover:not(:disabled){outline:1px solid var(--navy)}
-.cal-d:disabled{color:#C3CBD8;cursor:default}
-.cal-d i{position:absolute;left:50%;bottom:4px;width:16px;height:3px;transform:translateX(-50%);border-radius:2px;background:var(--steel-l);opacity:var(--o,0)}
-.cal-d.dentro{background:#E3E8F1}
-.cal-d.ponta{background:var(--navy);color:#fff}
-.cal-d.ponta i{background:#fff}
-.cal-d.hoje{box-shadow:inset 0 0 0 1px var(--accent)}
-.cal-atalhos{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
-.cal-atalhos button{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#F6F8FB;color:var(--steel);border:1px solid var(--line);border-radius:2px;padding:6px 10px;cursor:pointer}
-.cal-atalhos button:hover{color:var(--navy);border-color:var(--navy)}
-.cal-atalhos button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
-.cal-ativo{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d)}
+.per-pick{position:relative}
+.per-btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--navy);background:#F6F8FB;border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer;min-height:32px}
+.per-btn::before{content:"";width:13px;height:12px;border:1.5px solid var(--navy);border-top-width:3px;border-radius:1px;flex:none}
+.per-btn::after{content:"▾";color:var(--steel);font-size:10px}
+.per-btn:hover,.per-btn[aria-expanded="true"]{border-color:var(--navy)}
+.per-btn:focus-visible,.per-seta:focus-visible,.per-d:focus-visible,.per-atalhos button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.per-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:80;background:var(--card);border:1px solid var(--line);box-shadow:0 12px 32px rgba(11,23,48,.16);padding:14px 16px;width:max-content;max-width:calc(100vw - 32px)}
+.per-nav{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.per-dica{flex:1;text-align:center;font-size:12px;color:var(--steel)}
+.per-seta{font-size:18px;line-height:1;width:30px;height:30px;border:1px solid var(--line);background:#F6F8FB;color:var(--navy);border-radius:2px;cursor:pointer}
+.per-seta:disabled{opacity:.35;cursor:default}
+.per-meses{display:flex;gap:22px;flex-wrap:wrap}
+.per-mes h4{margin:0 0 8px;font-family:var(--disp);font-size:15px;font-weight:600;text-transform:uppercase;color:var(--navy);letter-spacing:.02em}
+.per-g{display:grid;grid-template-columns:repeat(7,34px);gap:2px}
+.per-sem{display:flex;align-items:center;justify-content:center;height:22px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0;color:var(--steel)}
+.per-d{position:relative;height:34px;border:0;border-radius:2px;background:transparent;font-family:var(--mono);font-size:12px;letter-spacing:0;text-align:center;color:var(--ink);cursor:pointer;padding:0}
+.per-d:hover:not(:disabled){outline:1px solid var(--navy)}
+.per-d:disabled{color:#C3CBD8;cursor:default}
+.per-d i{position:absolute;left:50%;bottom:4px;width:16px;height:3px;transform:translateX(-50%);border-radius:2px;background:var(--steel-l);opacity:var(--o,0)}
+.per-d.dentro{background:#E3E8F1}
+.per-d.ponta{background:var(--navy);color:#fff}
+.per-d.ponta i{background:#fff}
+.per-d.hoje{box-shadow:inset 0 0 0 1px var(--accent)}
+.per-atalhos{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.per-atalhos button{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#F6F8FB;color:var(--steel);border:1px solid var(--line);border-radius:2px;padding:6px 10px;cursor:pointer}
+.per-atalhos button:hover{color:var(--navy);border-color:var(--navy)}
+.per-atalhos button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.per-ativo{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d)}
 .bar-row{cursor:pointer}
-@media (max-width:640px){.cal-g{grid-template-columns:repeat(7,1fr)}.cal-pop{position:fixed;left:16px;right:16px;top:auto;width:auto}.cal-meses .cal-mes:first-child{display:none}}
+@media (max-width:640px){.per-g{grid-template-columns:repeat(7,1fr)}.per-pop{position:fixed;left:16px;right:16px;top:auto;width:auto}.per-meses .per-mes:first-child{display:none}}
 .dia-hit:hover{fill:rgba(255,255,255,.06)}
 .hero .gl{stroke:rgba(255,255,255,.08)}
 .hero .ax{fill:#7F8EA8}
@@ -88,19 +88,19 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
 <div class="perbar"><div class="wrap">
   <div class="perlinha">
     <span class="perlab">Período</span>
-    <div class="cal-pick">
-      <button type="button" class="cal-btn" id="cal-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="cal-pop"><span id="cal-rotulo">–</span></button>
-      <div class="cal-pop" id="cal-pop" role="dialog" aria-label="Escolher período" hidden>
-        <div class="cal-nav">
-          <button type="button" class="cal-seta" id="cal-ant" aria-label="Mês anterior">‹</button>
-          <span class="cal-dica" id="cal-dica">Clique no dia inicial e depois no dia final.</span>
-          <button type="button" class="cal-seta" id="cal-prox" aria-label="Próximo mês">›</button>
+    <div class="per-pick">
+      <button type="button" class="per-btn" id="per-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="per-pop"><span id="per-rotulo">–</span></button>
+      <div class="per-pop" id="per-pop" role="dialog" aria-label="Escolher período" hidden>
+        <div class="per-nav">
+          <button type="button" class="per-seta" id="per-ant" aria-label="Mês anterior">‹</button>
+          <span class="per-dica" id="per-dica">Clique no dia inicial e depois no dia final.</span>
+          <button type="button" class="per-seta" id="per-prox" aria-label="Próximo mês">›</button>
         </div>
-        <div class="cal-meses" id="cal-meses"></div>
-        <div class="cal-atalhos" id="cal-atalhos"></div>
+        <div class="per-meses" id="per-meses"></div>
+        <div class="per-atalhos" id="per-atalhos"></div>
       </div>
     </div>
-    <span class="cal-ativo" id="cal-ativo" hidden></span>
+    <span class="per-ativo" id="per-ativo" hidden></span>
   </div>
   <div class="perlinha">
     <form class="flt" id="filtros" aria-label="Filtros">
@@ -268,42 +268,42 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
     f.de.value = de; f.ate.value = ate; return igual;
   });
   const desenharCalendario = () => {
-    g('cal-rotulo').textContent = rotuloPeriodo();
+    g('per-rotulo').textContent = rotuloPeriodo();
     const ativo = atalhoAtivo();
-    g('cal-ativo').hidden = !!ativo;
-    g('cal-ativo').textContent = 'Período personalizado';
+    g('per-ativo').hidden = !!ativo;
+    g('per-ativo').textContent = 'Período personalizado';
     if (!cal.aberto) return;
     const meses = [somarMeses(cal.mesVisivel, -1), cal.mesVisivel];
     const de = cal.inicioPendente || f.de.value, ate = cal.inicioPendente || f.ate.value;
-    g('cal-meses').innerHTML = meses.map((ym) => {
+    g('per-meses').innerHTML = meses.map((ym) => {
       const [a, m] = ym.split('-').map(Number);
       const vazio = new Date(Date.UTC(a, m - 1, 1)).getUTCDay();
       const total = Number(ultimoDia(ym).slice(8));
-      let html = `<div class="cal-mes"><h4>${MESN[m - 1]} ${a}</h4><div class="cal-g">${SEMANA.map((s) => `<span class="cal-sem">${s}</span>`).join('')}`;
+      let html = `<div class="per-mes"><h4>${MESN[m - 1]} ${a}</h4><div class="per-g">${SEMANA.map((s) => `<span class="per-sem">${s}</span>`).join('')}`;
       html += '<span></span>'.repeat(vazio);
       for (let d = 1; d <= total; d++) {
         const dia = `${ym}-${String(d).padStart(2, '0')}`;
         const n = porDiaTotal.get(dia) || 0;
         const fora = dia < primeiroDia || dia > hoje;
-        const cls = ['cal-d', dia === de || dia === ate ? 'ponta' : dia > de && dia < ate ? 'dentro' : '', dia === hoje ? 'hoje' : ''].join(' ');
+        const cls = ['per-d', dia === de || dia === ate ? 'ponta' : dia > de && dia < ate ? 'dentro' : '', dia === hoje ? 'hoje' : ''].join(' ');
         html += `<button type="button" class="${cls}" data-dia="${dia}" ${fora ? 'disabled' : ''} aria-label="${d} de ${MESN[m - 1]}: ${nf(n)} movimentações" title="${nf(n)} movimentações">${d}<i style="--o:${n ? 0.35 + 0.65 * (n / maxDia) : 0}"></i></button>`;
       }
       return html + '</div></div>';
     }).join('');
-    g('cal-ant').disabled = somarMeses(cal.mesVisivel, -1) <= mesDe(primeiroDia);
-    g('cal-prox').disabled = cal.mesVisivel >= mesDe(hoje);
-    g('cal-dica').textContent = cal.inicioPendente ? `Início em ${fmtDia(cal.inicioPendente)}. Agora clique no dia final.` : 'Clique no dia inicial e depois no dia final.';
-    modes(g('cal-atalhos'), ATALHOS.map(([v, r]) => [v, r]), ativo ? ativo[0] : null, (v) => {
+    g('per-ant').disabled = somarMeses(cal.mesVisivel, -1) <= mesDe(primeiroDia);
+    g('per-prox').disabled = cal.mesVisivel >= mesDe(hoje);
+    g('per-dica').textContent = cal.inicioPendente ? `Início em ${fmtDia(cal.inicioPendente)}. Agora clique no dia final.` : 'Clique no dia inicial e depois no dia final.';
+    modes(g('per-atalhos'), ATALHOS.map(([v, r]) => [v, r]), ativo ? ativo[0] : null, (v) => {
       ATALHOS.find(([k]) => k === v)[2](); fecharCalendario(); aoMudar();
     });
   };
-  const abrirCalendario = () => { cal.aberto = true; cal.inicioPendente = null; cal.mesVisivel = mesDe(f.ate.value || hoje); g('cal-pop').hidden = false; g('cal-btn').setAttribute('aria-expanded', 'true'); desenharCalendario(); };
-  const fecharCalendario = () => { cal.aberto = false; cal.inicioPendente = null; g('cal-pop').hidden = true; g('cal-btn').setAttribute('aria-expanded', 'false'); };
-  g('cal-btn').addEventListener('click', () => (cal.aberto ? fecharCalendario() : abrirCalendario()));
-  g('cal-ant').addEventListener('click', () => { cal.mesVisivel = somarMeses(cal.mesVisivel, -1); desenharCalendario(); });
-  g('cal-prox').addEventListener('click', () => { cal.mesVisivel = somarMeses(cal.mesVisivel, 1); desenharCalendario(); });
-  g('cal-meses').addEventListener('click', (e) => {
-    const b = e.target.closest('.cal-d');
+  const abrirCalendario = () => { cal.aberto = true; cal.inicioPendente = null; cal.mesVisivel = mesDe(f.ate.value || hoje); g('per-pop').hidden = false; g('per-btn').setAttribute('aria-expanded', 'true'); desenharCalendario(); };
+  const fecharCalendario = () => { cal.aberto = false; cal.inicioPendente = null; g('per-pop').hidden = true; g('per-btn').setAttribute('aria-expanded', 'false'); };
+  g('per-btn').addEventListener('click', () => (cal.aberto ? fecharCalendario() : abrirCalendario()));
+  g('per-ant').addEventListener('click', () => { cal.mesVisivel = somarMeses(cal.mesVisivel, -1); desenharCalendario(); });
+  g('per-prox').addEventListener('click', () => { cal.mesVisivel = somarMeses(cal.mesVisivel, 1); desenharCalendario(); });
+  g('per-meses').addEventListener('click', (e) => {
+    const b = e.target.closest('.per-d');
     if (!b || b.disabled) return;
     const dia = b.dataset.dia;
     if (!cal.inicioPendente) { cal.inicioPendente = dia; desenharCalendario(); return; }
@@ -313,8 +313,8 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
     aoMudar();
   });
   // composedPath: o dia clicado pode já ter sido redesenhado quando o clique chega ao documento.
-  document.addEventListener('click', (e) => { if (cal.aberto && !e.composedPath().some((n) => n.classList && n.classList.contains('cal-pick'))) fecharCalendario(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && cal.aberto) { fecharCalendario(); g('cal-btn').focus(); } });
+  document.addEventListener('click', (e) => { if (cal.aberto && !e.composedPath().some((n) => n.classList && n.classList.contains('per-pick'))) fecharCalendario(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && cal.aberto) { fecharCalendario(); g('per-btn').focus(); } });
 
   // Leva à lista de movimentações já filtrada.
   const irParaMovimentacoes = () => g('movimentacoes').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
