@@ -36,3 +36,12 @@ test('painel não deixa texto do portal fechar a tag script', () => {
   const html = gerarPainel({ atualizadoEm: 'x', movimentacoes: [{ comando: '</script><b>' }] }, '<script>__DADOS__</script>');
   assert.ok(!html.includes('</script><b>'));
 });
+
+test('restaura o histórico embutido no painel com os mesmos ids da coleta', () => {
+  const { extrairDados } = require('../src/restaurar-historico');
+  const mov = linhaParaMovimentacao(linha('Expirado'));
+  const html = gerarPainel({ atualizadoEm: '2026-10-23T12:00:00Z', movimentacoes: [mov, mov] },
+    '<script id="dados" type="application/json">__DADOS__</script>');
+  const { movimentacoes } = extrairDados(html);
+  assert.deepStrictEqual(movimentacoes.map((m) => m.id), numerarRepetidas([mov, mov]).map((m) => m.id));
+});
