@@ -1,0 +1,516 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mudança de Configuração SASCAR</title>
+<link rel="icon" type="image/png" sizes="32x32" href="__FAVICON__">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/*__LAYOUT_CSS__*/
+</style>
+<style>
+/* Exclusivo deste painel: filtros com campos, situações e gráfico diário no hero. */
+.flt{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:flex-end;padding:9px 0}
+.flt label{display:grid;gap:3px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--steel);min-width:0}
+.flt input,.flt select{font-family:var(--body);font-size:12.5px;color:var(--ink);background:#F6F8FB;border:1px solid var(--line);border-radius:2px;padding:5px 8px;min-height:30px;max-width:100%}
+.flt select{max-width:250px}
+.flt input[type="search"]{width:120px}
+.flt input:focus-visible,.flt select:focus-visible,.btn-l:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.btn-l{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--steel);border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer}
+.btn-l:hover{color:var(--accent-d);border-color:var(--accent)}
+.st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap}
+.st::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--steel-l);flex:none}
+.st.ok{color:#2E7D52}.st.ok::before{background:#2E7D52}
+.st.exp{color:var(--accent-d)}.st.exp::before{background:var(--accent)}
+.st.pend{color:var(--plum)}.st.pend::before{background:var(--plum)}
+.pill.aj{background:#F1EAF6;color:var(--plum)}
+.placa{font-family:var(--mono);font-weight:600;font-size:12px;color:var(--navy);letter-spacing:.06em;white-space:nowrap}
+.troca{font-family:var(--mono);font-size:11.5px;color:var(--steel);white-space:nowrap}
+.troca b{color:var(--navy);font-weight:600}
+.delta{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--plum);margin-left:6px;white-space:nowrap}
+td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--steel-l);margin-top:2px}
+.lstbox td{vertical-align:middle}
+.kpi.alerta b{color:var(--accent-d)}
+.kpi.ajuste b{color:var(--plum)}
+.mais{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:16px;font-size:12.5px;color:var(--steel)}
+.dia-hit{cursor:pointer}
+/* Calendário de período */
+.per-pick{position:relative}
+.per-btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;color:var(--navy);background:#F6F8FB;border:1px solid var(--line);border-radius:2px;padding:7px 12px;cursor:pointer;min-height:32px}
+.per-btn::before{content:"";width:13px;height:12px;border:1.5px solid var(--navy);border-top-width:3px;border-radius:1px;flex:none}
+.per-btn::after{content:"▾";color:var(--steel);font-size:10px}
+.per-btn:hover,.per-btn[aria-expanded="true"]{border-color:var(--navy)}
+.per-btn:focus-visible,.per-seta:focus-visible,.per-d:focus-visible,.per-atalhos button:focus-visible{outline:2px solid var(--navy);outline-offset:1px}
+.per-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:80;background:var(--card);border:1px solid var(--line);box-shadow:0 12px 32px rgba(11,23,48,.16);padding:14px 16px;width:max-content;max-width:calc(100vw - 32px)}
+.per-nav{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.per-dica{flex:1;text-align:center;font-size:12px;color:var(--steel)}
+.per-seta{font-size:18px;line-height:1;width:30px;height:30px;border:1px solid var(--line);background:#F6F8FB;color:var(--navy);border-radius:2px;cursor:pointer}
+.per-seta:disabled{opacity:.35;cursor:default}
+.per-meses{display:flex;gap:22px;flex-wrap:wrap}
+.per-mes h4{margin:0 0 8px;font-family:var(--disp);font-size:15px;font-weight:600;text-transform:uppercase;color:var(--navy);letter-spacing:.02em}
+.per-g{display:grid;grid-template-columns:repeat(7,34px);gap:2px}
+.per-sem{display:flex;align-items:center;justify-content:center;height:22px;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:0;color:var(--steel)}
+.per-d{position:relative;height:34px;border:0;border-radius:2px;background:transparent;font-family:var(--mono);font-size:12px;letter-spacing:0;text-align:center;color:var(--ink);cursor:pointer;padding:0}
+.per-d:hover:not(:disabled){outline:1px solid var(--navy)}
+.per-d:disabled{color:#C3CBD8;cursor:default}
+.per-d i{position:absolute;left:50%;bottom:4px;width:16px;height:3px;transform:translateX(-50%);border-radius:2px;background:var(--steel-l);opacity:var(--o,0)}
+.per-d.dentro{background:#E3E8F1}
+.per-d.ponta{background:var(--navy);color:#fff}
+.per-d.ponta i{background:#fff}
+.per-d.hoje{box-shadow:inset 0 0 0 1px var(--accent)}
+.per-atalhos{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.per-atalhos button{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#F6F8FB;color:var(--steel);border:1px solid var(--line);border-radius:2px;padding:6px 10px;cursor:pointer}
+.per-atalhos button:hover{color:var(--navy);border-color:var(--navy)}
+.per-atalhos button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.per-ativo{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-d)}
+.bar-row{cursor:pointer}
+@media (max-width:640px){.per-g{grid-template-columns:repeat(7,1fr)}.per-pop{position:fixed;left:16px;right:16px;top:auto;width:auto}.per-meses .per-mes:first-child{display:none}}
+.dia-hit:hover{fill:rgba(255,255,255,.06)}
+.hero .gl{stroke:rgba(255,255,255,.08)}
+.hero .ax{fill:#7F8EA8}
+/* Topo com altura fixa: encolher ao rolar desloca a página, que volta a cruzar o limite e o topo fica alternando de tamanho. */
+.stickytop.scrolled .top-in{padding:14px 0}
+.stickytop.scrolled .top img{height:34px}
+.stickytop.scrolled .perbar-in{padding:10px 0}
+.stickytop.scrolled .perbar .perlinha{padding:9px 0}
+@media (max-width:640px){.flt select,.flt input[type="search"]{width:100%;max-width:none}.flt label{flex:1 1 140px}}
+/* No celular os filtros ocupariam boa parte da tela; o topo rola junto com a página. */
+@media (max-width:760px){.stickytop{position:relative}}
+</style>
+</head><body>
+
+<div class="stickytop" id="stickytop">
+<header class="top"><div class="wrap top-in">
+  <img src="__LOGO__" alt="Grupo Dínamo · Tóliman Transportes">
+  <div class="rule"></div>
+  <div class="who">SASCAR Telemetry<b>Mudança de Configuração</b></div>
+  <nav><a href="#alertas">Alertas</a><a href="#graficos">Comandos e logins</a><a href="#movimentacoes">Movimentações</a></nav>
+</div></header>
+<div class="perbar"><div class="wrap">
+  <div class="perlinha">
+    <span class="perlab">Período</span>
+    <div class="per-pick">
+      <button type="button" class="per-btn" id="per-btn" aria-haspopup="dialog" aria-expanded="false" aria-controls="per-pop"><span id="per-rotulo">–</span></button>
+      <div class="per-pop" id="per-pop" role="dialog" aria-label="Escolher período" hidden>
+        <div class="per-nav">
+          <button type="button" class="per-seta" id="per-ant" aria-label="Mês anterior">‹</button>
+          <span class="per-dica" id="per-dica">Clique no dia inicial e depois no dia final.</span>
+          <button type="button" class="per-seta" id="per-prox" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="per-meses" id="per-meses"></div>
+        <div class="per-atalhos" id="per-atalhos"></div>
+      </div>
+    </div>
+    <span class="per-ativo" id="per-ativo" hidden></span>
+  </div>
+  <div class="perlinha">
+    <form class="flt" id="filtros" aria-label="Filtros">
+      <input type="hidden" id="f-de"><input type="hidden" id="f-ate">
+      <label for="f-veiculo">Veículo<input type="search" id="f-veiculo" placeholder="Placa" autocomplete="off"></label>
+      <label for="f-comando">Comando<select id="f-comando"><option value="">Todos</option></select></label>
+      <label for="f-situacao">Situação<select id="f-situacao"><option value="">Todas</option></select></label>
+      <label for="f-responsavel">Usuário<select id="f-responsavel"><option value="">Todos</option></select></label>
+      <label for="f-login">Login<select id="f-login"><option value="">Todos</option></select></label>
+      <button type="reset" class="btn-l" id="limpar">Limpar filtros</button>
+    </form>
+  </div>
+</div></div>
+</div>
+
+<div class="hero"><div class="wrap hero-grid">
+  <div class="h-id">
+    <div class="eyebrow" id="h-periodo">Tóliman Transportes</div>
+    <h1>Mudança de<em>configuração</em></h1>
+    <p class="sub">Comandos de configuração enviados aos rastreadores da frota pelo portal SASCAR.</p>
+    <div class="bignum" id="kBig">0</div>
+    <div class="bigcap">Movimentações no período</div>
+    <div class="split">
+      <div><span id="hExec">0</span><small>executadas</small></div>
+      <div><span id="hExp">0</span><small>expiradas</small></div>
+      <div><span id="hVeic">0</span><small>veículos</small></div>
+    </div>
+  </div>
+  <div class="h-sem">
+    <div class="yard-head"><h3>Movimentações por dia</h3><p>Cada coluna é um dia. Clique numa coluna para ver as movimentações daquele dia.</p></div>
+    <div id="g-dia"></div>
+    <div class="legend">
+      <span><i style="background:#98A6BC"></i>Executado</span>
+      <span><i style="background:var(--accent)"></i>Expirado</span>
+      <span><i style="background:var(--plum)"></i>Pendente</span>
+    </div>
+    <p class="pnt-note" id="atualizado"></p>
+  </div>
+</div></div>
+
+<section id="alertas"><div class="wrap">
+  <div class="sec-head"><h2>Alertas</h2><p id="alertas-regra"></p><span class="tag" id="alertas-tag">0</span></div>
+  <div class="kpis">
+    <div class="kpi" id="kExpBox"><b id="kExp">0</b><u>Expiradas</u><i>não chegaram ao equipamento</i></div>
+    <div class="kpi" id="kPendBox"><b id="kPend">0</b><u>Pendentes atrasadas</u><i id="kPendNota"></i></div>
+    <div class="kpi ajuste"><b id="kAj">0</b><u>Ajustes de hodômetro/horímetro</u><i>executados ou não</i></div>
+    <div class="kpi"><b id="kTempo">–</b><u>Tempo até executar</u><i>mediana entre envio e execução</i></div>
+  </div>
+  <div class="card" style="margin-top:22px">
+    <div id="alertas-lista"></div>
+  </div>
+</div></section>
+
+<section id="graficos" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><h2>Comandos e logins</h2><p>O que foi alterado e quem solicitou, no período e filtros escolhidos.</p></div>
+  <div class="grid2">
+    <div class="card"><div class="card-head"><div><h3>Comandos mais enviados</h3><p class="hint">Os 10 primeiros.</p></div></div><div id="g-cmd"></div></div>
+    <div class="card"><div class="card-head"><div><h3>Por login</h3><p class="hint">Vários logins usam o mesmo usuário do portal.</p></div></div><div id="g-resp"></div></div>
+  </div>
+</div></section>
+
+<section id="movimentacoes" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><h2>Movimentações</h2><p id="lista-conta"></p></div>
+  <div class="card">
+    <div class="lstbox">
+      <table>
+        <thead><tr><th>Enviada em</th><th>Veículo</th><th>Comando</th><th>De → Para</th><th>Login</th><th>Situação</th><th class="r">Levou</th></tr></thead>
+        <tbody id="linhas"></tbody>
+      </table>
+    </div>
+    <div class="mais"><button type="button" class="btn-l" id="mostrar-mais">Mostrar mais 100</button></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap foot">
+  <img src="__LOGO_LIGHT__" alt="Grupo Dínamo · Tóliman Transportes">
+  <p>Coleta diária automática do relatório do portal, somada ao histórico já coletado. Horários de Brasília.
+    <span class="src">Relatório de origem · SASCAR Telemetry (Michelin Connected Fleet)</span>
+    <span class="rel" id="rodape-rel"><b>Mudança de Configuração</b></span></p>
+</div></footer>
+
+<script id="dados" type="application/json">__DADOS__</script>
+<script>
+/*__LAYOUT_JS__*/
+</script>
+<script>
+(() => {
+  // Uma mudança sem execução há mais que isso vira alerta.
+  const LIMITE_PENDENCIA_HORAS = 24;
+  // Ajustes de hodômetro e horímetro sempre aparecem nos alertas, executados ou não.
+  const COMANDOS_AJUSTE = /HOD[OÔ]METRO|HOR[IÍ]METRO/i;
+  const POR_PAGINA = 100;
+  const FUSO = 'America/Sao_Paulo';
+  const COR = { executado: '#98A6BC', expirado: ACC, pendente: PLUM };
+
+  const base = JSON.parse(g('dados').textContent);
+  const agora = new Date(base.atualizadoEm);
+  const fmtDataHora = new Intl.DateTimeFormat('pt-BR', { timeZone: FUSO, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const fmtDia = (d) => `${d.slice(8, 10)}/${d.slice(5, 7)}`;
+  const fmtDiaLongo = (d) => `${Number(d.slice(8, 10))} de ${MESN[Number(d.slice(5, 7)) - 1]}`;
+  const fmtDelta = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1, signDisplay: 'exceptZero' });
+  const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: FUSO }).format(agora);
+
+  const movs = base.movimentacoes.map((m) => {
+    const enviada = new Date(m.data);
+    const executada = m.dataSituacao ? new Date(m.dataSituacao) : null;
+    const sit = m.situacao.toLowerCase();
+    const tipo = sit.startsWith('execut') ? 'executado' : sit.startsWith('expir') ? 'expirado' : 'pendente';
+    const horasAberta = (agora - enviada) / 36e5;
+    return {
+      ...m, enviada, tipo, dia: m.data.slice(0, 10),
+      quem: `${m.login || 'sem login'} · ${m.usuario}`,
+      ajuste: COMANDOS_AJUSTE.test(m.comando),
+      minutos: tipo === 'executado' && executada ? Math.max(0, (executada - enviada) / 6e4) : null,
+      atrasado: tipo === 'pendente' && horasAberta > LIMITE_PENDENCIA_HORAS,
+      horasAberta,
+    };
+  });
+  const primeiroDia = movs.length ? movs.reduce((a, m) => (m.dia < a ? m.dia : a), movs[0].dia) : hoje;
+
+  g('atualizado').innerHTML = `<strong>Dados atualizados em ${fmtDataHora.format(agora)}.</strong> Histórico desde ${fmtDia(primeiroDia)}/${primeiroDia.slice(0, 4)}, com ${nf(movs.length)} movimentações.`;
+  g('rodape-rel').innerHTML = `<b>Mudança de Configuração</b> · desde ${fmtDia(primeiroDia)}/${primeiroDia.slice(0, 4)} · ${nf(movs.length)} movimentações`;
+  g('alertas-regra').textContent = `Mudanças expiradas, pendentes há mais de ${LIMITE_PENDENCIA_HORAS} h e todo ajuste de hodômetro ou horímetro.`;
+
+  // ---------- Filtros ----------
+  const f = { de: g('f-de'), ate: g('f-ate'), veiculo: g('f-veiculo'), comando: g('f-comando'), situacao: g('f-situacao'), responsavel: g('f-responsavel'), login: g('f-login') };
+  const opcoes = (sel, valores) => [...new Set(valores)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR')).forEach((v) => sel.add(new Option(v, v)));
+  opcoes(f.comando, movs.map((m) => m.comando));
+  opcoes(f.situacao, movs.map((m) => m.situacao));
+  opcoes(f.responsavel, movs.map((m) => m.usuario));
+  opcoes(f.login, movs.map((m) => m.login));
+  // Valor próprio para "sem login": o vazio do select já significa "Todos".
+  const SEM_LOGIN = '__sem_login__';
+  if (movs.some((m) => !m.login)) f.login.add(new Option('Sem login', SEM_LOGIN));
+  f.de.min = f.ate.min = primeiroDia;
+  f.de.max = f.ate.max = hoje;
+
+  const somarDias = (dia, n) => { const d = new Date(dia + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+  const aplicarPeriodo = (dias) => {
+    f.ate.value = hoje;
+    const inicio = dias ? somarDias(hoje, -(dias - 1)) : primeiroDia;
+    f.de.value = inicio < primeiroDia ? primeiroDia : inicio;
+  };
+  const definirPeriodo = (de, ate) => {
+    f.de.value = de < primeiroDia ? primeiroDia : de;
+    f.ate.value = ate > hoje ? hoje : ate;
+  };
+
+  // ---------- Calendário ----------
+  const SEMANA = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+  const porDiaTotal = new Map();
+  movs.forEach((m) => porDiaTotal.set(m.dia, (porDiaTotal.get(m.dia) || 0) + 1));
+  const maxDia = Math.max(1, ...porDiaTotal.values());
+  const mesDe = (d) => d.slice(0, 7);
+  const somarMeses = (ym, n) => { const [a, m] = ym.split('-').map(Number); const t = new Date(Date.UTC(a, m - 1 + n, 1)); return t.toISOString().slice(0, 7); };
+  const ultimoDia = (ym) => { const [a, m] = ym.split('-').map(Number); return new Date(Date.UTC(a, m, 0)).toISOString().slice(0, 10); };
+  const ATALHOS = [
+    ['7', '7 dias', () => aplicarPeriodo(7)],
+    ['30', '30 dias', () => aplicarPeriodo(30)],
+    ['mes', 'Este mês', () => definirPeriodo(mesDe(hoje) + '-01', hoje)],
+    ['mesant', 'Mês anterior', () => { const ym = somarMeses(mesDe(hoje), -1); definirPeriodo(ym + '-01', ultimoDia(ym)); }],
+    ['tudo', 'Todo o histórico', () => aplicarPeriodo(0)],
+  ];
+  const cal = { aberto: false, inicioPendente: null, mesVisivel: mesDe(hoje) };
+  const rotuloPeriodo = () => (f.de.value === f.ate.value ? `${fmtDia(f.de.value)}/${f.de.value.slice(0, 4)}` : `${fmtDia(f.de.value)}/${f.de.value.slice(0, 4)} – ${fmtDia(f.ate.value)}/${f.ate.value.slice(0, 4)}`);
+  const atalhoAtivo = () => ATALHOS.find(([, , aplicar]) => {
+    const [de, ate] = [f.de.value, f.ate.value]; aplicar(); const igual = f.de.value === de && f.ate.value === ate;
+    f.de.value = de; f.ate.value = ate; return igual;
+  });
+  const desenharCalendario = () => {
+    g('per-rotulo').textContent = rotuloPeriodo();
+    const ativo = atalhoAtivo();
+    g('per-ativo').hidden = !!ativo;
+    g('per-ativo').textContent = 'Período personalizado';
+    if (!cal.aberto) return;
+    const meses = [somarMeses(cal.mesVisivel, -1), cal.mesVisivel];
+    const de = cal.inicioPendente || f.de.value, ate = cal.inicioPendente || f.ate.value;
+    g('per-meses').innerHTML = meses.map((ym) => {
+      const [a, m] = ym.split('-').map(Number);
+      const vazio = new Date(Date.UTC(a, m - 1, 1)).getUTCDay();
+      const total = Number(ultimoDia(ym).slice(8));
+      let html = `<div class="per-mes"><h4>${MESN[m - 1]} ${a}</h4><div class="per-g">${SEMANA.map((s) => `<span class="per-sem">${s}</span>`).join('')}`;
+      html += '<span></span>'.repeat(vazio);
+      for (let d = 1; d <= total; d++) {
+        const dia = `${ym}-${String(d).padStart(2, '0')}`;
+        const n = porDiaTotal.get(dia) || 0;
+        const fora = dia < primeiroDia || dia > hoje;
+        const cls = ['per-d', dia === de || dia === ate ? 'ponta' : dia > de && dia < ate ? 'dentro' : '', dia === hoje ? 'hoje' : ''].join(' ');
+        html += `<button type="button" class="${cls}" data-dia="${dia}" ${fora ? 'disabled' : ''} aria-label="${d} de ${MESN[m - 1]}: ${nf(n)} movimentações" title="${nf(n)} movimentações">${d}<i style="--o:${n ? 0.35 + 0.65 * (n / maxDia) : 0}"></i></button>`;
+      }
+      return html + '</div></div>';
+    }).join('');
+    g('per-ant').disabled = somarMeses(cal.mesVisivel, -1) <= mesDe(primeiroDia);
+    g('per-prox').disabled = cal.mesVisivel >= mesDe(hoje);
+    g('per-dica').textContent = cal.inicioPendente ? `Início em ${fmtDia(cal.inicioPendente)}. Agora clique no dia final.` : 'Clique no dia inicial e depois no dia final.';
+    modes(g('per-atalhos'), ATALHOS.map(([v, r]) => [v, r]), ativo ? ativo[0] : null, (v) => {
+      ATALHOS.find(([k]) => k === v)[2](); fecharCalendario(); aoMudar();
+    });
+  };
+  const abrirCalendario = () => { cal.aberto = true; cal.inicioPendente = null; cal.mesVisivel = mesDe(f.ate.value || hoje); g('per-pop').hidden = false; g('per-btn').setAttribute('aria-expanded', 'true'); desenharCalendario(); };
+  const fecharCalendario = () => { cal.aberto = false; cal.inicioPendente = null; g('per-pop').hidden = true; g('per-btn').setAttribute('aria-expanded', 'false'); };
+  g('per-btn').addEventListener('click', () => (cal.aberto ? fecharCalendario() : abrirCalendario()));
+  g('per-ant').addEventListener('click', () => { cal.mesVisivel = somarMeses(cal.mesVisivel, -1); desenharCalendario(); });
+  g('per-prox').addEventListener('click', () => { cal.mesVisivel = somarMeses(cal.mesVisivel, 1); desenharCalendario(); });
+  g('per-meses').addEventListener('click', (e) => {
+    const b = e.target.closest('.per-d');
+    if (!b || b.disabled) return;
+    const dia = b.dataset.dia;
+    if (!cal.inicioPendente) { cal.inicioPendente = dia; desenharCalendario(); return; }
+    const [de, ate] = dia < cal.inicioPendente ? [dia, cal.inicioPendente] : [cal.inicioPendente, dia];
+    definirPeriodo(de, ate);
+    fecharCalendario();
+    aoMudar();
+  });
+  // composedPath: o dia clicado pode já ter sido redesenhado quando o clique chega ao documento.
+  document.addEventListener('click', (e) => { if (cal.aberto && !e.composedPath().some((n) => n.classList && n.classList.contains('per-pick'))) fecharCalendario(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && cal.aberto) { fecharCalendario(); g('per-btn').focus(); } });
+
+  // Leva à lista de movimentações já filtrada.
+  const irParaMovimentacoes = () => g('movimentacoes').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+
+  let pagina = 1;
+  const filtrar = () => {
+    const placa = f.veiculo.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    return movs.filter((m) =>
+      (!f.de.value || m.dia >= f.de.value) &&
+      (!f.ate.value || m.dia <= f.ate.value) &&
+      (!placa || m.veiculo.toUpperCase().replace(/[^A-Z0-9]/g, '').includes(placa)) &&
+      (!f.comando.value || m.comando === f.comando.value) &&
+      (!f.situacao.value || m.situacao === f.situacao.value) &&
+      (!f.responsavel.value || m.usuario === f.responsavel.value) &&
+      (!f.login.value || (f.login.value === SEM_LOGIN ? !m.login : m.login === f.login.value)));
+  };
+
+  // ---------- Formatação ----------
+  const duracao = (min) => {
+    if (min == null) return '–';
+    if (min < 1) return '< 1 min';
+    if (min < 60) return `${Math.round(min)} min`;
+    const h = Math.floor(min / 60), r = Math.round(min % 60);
+    if (h < 48) return r ? `${h} h ${r} min` : `${h} h`;
+    return `${Math.round(h / 24)} dias`;
+  };
+  const mediana = (xs) => {
+    if (!xs.length) return null;
+    const s = [...xs].sort((a, b) => a - b), k = Math.floor(s.length / 2);
+    return s.length % 2 ? s[k] : (s[k - 1] + s[k]) / 2;
+  };
+  const valor = (v) => (v === '' ? '—' : esc(v));
+  const situacao = (m) => `<span class="st ${m.tipo === 'executado' ? 'ok' : m.tipo === 'expirado' ? 'exp' : 'pend'}">${esc(m.situacao)}</span>`;
+  const diferenca = (m) => {
+    const a = parseFloat(String(m.valorAnterior).replace(',', '.')), b = parseFloat(String(m.valorAtual).replace(',', '.'));
+    if (!isFinite(a) || !isFinite(b)) return '';
+    return `${fmtDelta.format(b - a)} ${/HOR[IÍ]METRO/i.test(m.comando) ? 'min' : 'km'}`;
+  };
+  const troca = (m) => `<span class="troca">${valor(m.valorAnterior)} → <b>${valor(m.valorAtual)}</b>${m.medida && m.medida !== 'N/A' && !m.ajuste ? ' ' + esc(m.medida) : ''}</span>${m.ajuste ? `<span class="delta">${diferenca(m)}</span>` : ''}`;
+  const login = (m) => `${esc(m.login || '–')}<small class="u">${esc(m.usuario)}</small>`;
+
+  // ---------- Hero ----------
+  const hero = (lista) => {
+    const de = f.de.value || primeiroDia, ate = f.ate.value || hoje;
+    g('h-periodo').textContent = `Tóliman Transportes · ${fmtDiaLongo(de)} a ${fmtDiaLongo(ate)}`;
+    const exp = lista.filter((m) => m.tipo === 'expirado').length;
+    g('kBig').innerHTML = nf(lista.length);
+    g('hExec').textContent = nf(lista.filter((m) => m.tipo === 'executado').length);
+    g('hExp').innerHTML = exp ? `<span style="color:var(--accent)">${nf(exp)}</span>` : '0';
+    g('hVeic').textContent = nf(new Set(lista.map((m) => m.veiculo)).size);
+  };
+
+  // ---------- Gráfico diário (no hero) ----------
+  const graficoDia = (lista) => {
+    const box = g('g-dia');
+    const de = f.de.value || primeiroDia, ate = f.ate.value || hoje;
+    const dias = [];
+    for (let d = de; d <= ate && dias.length < 400; d = somarDias(d, 1)) dias.push(d);
+    const porDia = new Map(dias.map((d) => [d, { executado: 0, expirado: 0, pendente: 0 }]));
+    lista.forEach((m) => { const c = porDia.get(m.dia); if (c) c[m.tipo]++; });
+    const W = 720, H = 230, ml = 34, mr = 6, mt = 8, mb = 22, iw = W - ml - mr, ih = H - mt - mb;
+    const max = Math.max(1, ...[...porDia.values()].map((c) => c.executado + c.expirado + c.pendente));
+    const bruto = max / 4, mag = 10 ** Math.floor(Math.log10(bruto || 1));
+    const passo = [1, 2, 5, 10].map((k) => k * mag).find((s) => s >= bruto) || mag;
+    const topo = Math.ceil(max / passo) * passo;
+    const y = (v) => mt + ih - (v / topo) * ih;
+    const bw = iw / Math.max(1, dias.length), gap = Math.min(3, bw * 0.25);
+    let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Movimentações por dia, por situação">`;
+    for (let v = 0; v <= topo; v += passo) svg += `<line class="gl" x1="${ml}" x2="${W - mr}" y1="${y(v)}" y2="${y(v)}"/><text class="ax" x="${ml - 6}" y="${y(v) + 3}" text-anchor="end">${nf(v)}</text>`;
+    const cada = Math.max(1, Math.ceil(dias.length / 8));
+    dias.forEach((d, i) => {
+      const c = porDia.get(d), x = ml + i * bw + gap / 2, w = Math.max(1, bw - gap);
+      let acum = 0;
+      ['executado', 'expirado', 'pendente'].forEach((k) => {
+        if (!c[k]) return;
+        const y0 = y(acum + c[k]), h = y(acum) - y0;
+        // 1px de folga entre segmentos empilhados.
+        svg += `<rect x="${x}" y="${y0}" width="${w}" height="${Math.max(1, h - (acum ? 1 : 0))}" fill="${COR[k]}"/>`;
+        acum += c[k];
+      });
+      if (i % cada === 0) svg += `<text class="ax" x="${x + w / 2}" y="${H - 6}" text-anchor="middle">${fmtDia(d)}</text>`;
+      svg += `<rect class="dia-hit" data-i="${i}" x="${ml + i * bw}" y="${mt}" width="${bw}" height="${ih}" fill="transparent"/>`;
+    });
+    box.innerHTML = svg + '</svg>';
+    box.querySelectorAll('.dia-hit').forEach((r) => {
+      const d = dias[Number(r.dataset.i)], c = porDia.get(d);
+      bindTip(r, `<b>${fmtDiaLongo(d)}</b>${nf(c.executado + c.expirado + c.pendente)} movimentações<br><span>Executado ${nf(c.executado)} · Expirado ${nf(c.expirado)} · Pendente ${nf(c.pendente)}</span><br><span>Clique para ver as movimentações do dia</span>`);
+      r.addEventListener('click', () => { tip.style.opacity = 0; definirPeriodo(d, d); aoMudar(); irParaMovimentacoes(); });
+    });
+  };
+
+  // ---------- Alertas ----------
+  const alertas = (lista) => {
+    const exec = lista.filter((m) => m.tipo === 'executado');
+    const exp = lista.filter((m) => m.tipo === 'expirado');
+    const pend = lista.filter((m) => m.tipo === 'pendente');
+    const atras = pend.filter((m) => m.atrasado);
+    const aj = lista.filter((m) => m.ajuste);
+    g('kExp').textContent = nf(exp.length);
+    g('kExpBox').classList.toggle('alerta', exp.length > 0);
+    g('kPend').textContent = nf(atras.length);
+    g('kPendBox').classList.toggle('alerta', atras.length > 0);
+    g('kPendNota').textContent = pend.length ? `${nf(pend.length)} pendentes no total` : 'nenhuma pendente';
+    g('kAj').textContent = nf(aj.length);
+    g('kTempo').textContent = duracao(mediana(exec.map((m) => m.minutos).filter((x) => x != null)));
+
+    const itens = lista.filter((m) => m.tipo === 'expirado' || m.atrasado || m.ajuste).sort((a, b) => b.enviada - a.enviada);
+    g('alertas-tag').textContent = `${nf(itens.length)} ${itens.length === 1 ? 'alerta' : 'alertas'}`;
+    const box = g('alertas-lista');
+    if (!itens.length) {
+      box.innerHTML = '<div class="limpo"><b>Nenhum alerta</b><p>Nenhuma mudança expirada, atrasada ou de hodômetro/horímetro no período e filtros escolhidos.</p></div>';
+      return;
+    }
+    const motivo = (m) => m.tipo === 'expirado' ? '<span class="pill">Expirado</span>'
+      : m.atrasado ? `<span class="pill">Pendente &gt; ${LIMITE_PENDENCIA_HORAS} h</span>`
+      : '<span class="pill aj">Ajuste</span>';
+    box.innerHTML = `<div class="lstbox" style="max-height:420px"><table>
+      <thead><tr><th>Alerta</th><th>Enviada em</th><th>Veículo</th><th>Comando</th><th>De → Para</th><th>Login</th><th>Situação</th></tr></thead>
+      <tbody>${itens.map((m) => `<tr>
+        <td>${motivo(m)}</td>
+        <td class="mono">${fmtDataHora.format(m.enviada)}</td>
+        <td><span class="placa">${esc(m.veiculo)}</span></td>
+        <td>${esc(m.comando)}</td>
+        <td>${troca(m)}</td>
+        <td>${login(m)}</td>
+        <td>${situacao(m)}${m.tipo === 'pendente' ? `<small class="u">aberta há ${duracao(m.horasAberta * 60)}</small>` : ''}</td>
+      </tr>`).join('')}</tbody></table></div>`;
+  };
+
+  // ---------- Barras ----------
+  const contar = (lista, campo) => {
+    const c = new Map();
+    lista.forEach((m) => c.set(m[campo], (c.get(m[campo]) || 0) + 1));
+    return [...c.entries()].sort((a, b) => b[1] - a[1]);
+  };
+  const graficoBarras = (id, pares, total, divide, aoClicar) => {
+    const box = g(id);
+    if (!pares.length) { box.innerHTML = '<p class="hint">Sem dados no período filtrado.</p>'; return; }
+    barras(box, pares.map(([nm, v]) => {
+      const [nome, sub] = divide ? nm.split(' · ') : [nm, ''];
+      return { nm: nome, sub, v, pc: (v / total) * 100, cls: 's20', tip: `<b>${esc(nm)}</b>${nf(v)} movimentações<br><span>Clique para ver as movimentações</span>` };
+    }));
+    box.querySelectorAll('.bar-row').forEach((linha, i) => {
+      linha.tabIndex = 0;
+      linha.setAttribute('role', 'button');
+      const abrir = () => { tip.style.opacity = 0; aoClicar(pares[i][0]); aoMudar(); irParaMovimentacoes(); };
+      linha.addEventListener('click', abrir);
+      linha.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
+    });
+  };
+
+  // ---------- Tabela ----------
+  const tabela = (lista) => {
+    const ordenada = [...lista].sort((a, b) => b.enviada - a.enviada);
+    const visiveis = ordenada.slice(0, pagina * POR_PAGINA);
+    g('linhas').innerHTML = visiveis.length ? visiveis.map((m) => `<tr>
+      <td class="mono">${fmtDataHora.format(m.enviada)}</td>
+      <td><span class="placa">${esc(m.veiculo)}</span></td>
+      <td>${esc(m.comando)}</td>
+      <td>${troca(m)}</td>
+      <td>${login(m)}</td>
+      <td>${situacao(m)}</td>
+      <td class="r mono">${m.tipo === 'executado' ? duracao(m.minutos) : m.tipo === 'pendente' ? 'aberta há ' + duracao(m.horasAberta * 60) : '–'}</td>
+    </tr>`).join('') : '<tr><td colspan="7">Nenhuma movimentação com esses filtros.</td></tr>';
+    g('lista-conta').textContent = `Mostrando ${nf(visiveis.length)} de ${nf(ordenada.length)}, das mais recentes para as mais antigas.`;
+    g('mostrar-mais').hidden = visiveis.length >= ordenada.length;
+  };
+
+  const atualizar = () => {
+    desenharCalendario();
+    const lista = filtrar();
+    hero(lista);
+    graficoDia(lista);
+    alertas(lista);
+    graficoBarras('g-cmd', contar(lista, 'comando').slice(0, 10), lista.length, false, (cmd) => { f.comando.value = cmd; });
+    graficoBarras('g-resp', contar(lista, 'quem'), lista.length, true, (quem) => {
+      const m = lista.find((x) => x.quem === quem);
+      f.login.value = m ? m.login || SEM_LOGIN : ''; f.responsavel.value = m ? m.usuario : '';
+    });
+    tabela(lista);
+  };
+
+  // ---------- Eventos ----------
+  function aoMudar() { pagina = 1; atualizar(); }
+  [f.comando, f.situacao, f.responsavel, f.login].forEach((s) => s.addEventListener('change', aoMudar));
+  f.veiculo.addEventListener('input', aoMudar);
+  g('filtros').addEventListener('reset', () => setTimeout(() => { aplicarPeriodo(30); aoMudar(); }));
+  g('filtros').addEventListener('submit', (e) => e.preventDefault());
+  g('mostrar-mais').addEventListener('click', () => { pagina++; tabela(filtrar()); });
+
+  aplicarPeriodo(30);
+  atualizar();
+  reveal();
+})();
+</script>
+</body></html>
