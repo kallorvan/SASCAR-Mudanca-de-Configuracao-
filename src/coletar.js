@@ -12,6 +12,8 @@ const { COLUNAS, linhaParaMovimentacao, numerarRepetidas, mesclar } = require('.
 const URL_LOGIN = 'https://telemetria.sascar.com.br/telemetria/pages/login.jsf';
 const ARQUIVO = path.join(__dirname, '..', 'dados', 'movimentacoes.json');
 const PASTA_DEPURACAO = path.join(__dirname, '..', 'tmp');
+// O portal aceita no máximo 30 dias por consulta.
+const MAX_DIAS = 30;
 
 function exigirVariavel(nome) {
   const valor = process.env[nome];
@@ -51,7 +53,7 @@ async function abrirRelatorio(page, periodo) {
     // "Aplicar" recarrega a tabela por AJAX; espera até as linhas serem do período pedido.
     await page.click('[id="formrelatorio:botaoPesquisa"]');
     const paraIso = (d) => d.split('/').reverse().join('-');
-    await page.waitForFunction(({ de, ate, colunas }) => {
+    const linhasDoPeriodo = page.waitForFunction(({ de, ate, colunas }) => {
       const iso = (t) => t.slice(0, 10).split('/').reverse().join('-');
       const datas = [...document.querySelectorAll('tr')]
         .map((tr) => tr.querySelectorAll('td'))
@@ -59,6 +61,9 @@ async function abrirRelatorio(page, periodo) {
         .map((tds) => iso(tds[2].innerText.trim()));
       return datas.length > 0 && datas.every((d) => d >= de && d <= ate);
     }, { de: paraIso(periodo.de), ate: paraIso(periodo.ate), colunas: COLUNAS.length }, { timeout: 180000, polling: 1000 });
+    await linhasDoPeriodo.catch(() => {
+      throw new Error(`O portal não mostrou movimentações de ${periodo.de} a ${periodo.ate} em 3 min. O período pode não ter nenhuma.`);
+    });
   }
 }
 
@@ -69,6 +74,15 @@ function lerPeriodo(args) {
   if (!de && !ate) return null;
   const formato = /^\d{2}\/\d{2}\/\d{4}$/;
   if (!formato.test(de || '') || !formato.test(ate || '')) throw new Error('Use --de e --ate juntos, no formato dd/mm/aaaa.');
+  const paraData = (texto) => {
+    const [dia, mes, ano] = texto.split('/').map(Number);
+    const d = new Date(Date.UTC(ano, mes - 1, dia));
+    if (d.getUTCDate() !== dia || d.getUTCMonth() !== mes - 1) throw new Error(`Data inválida: ${texto}.`);
+    return d;
+  };
+  const dias = (paraData(ate) - paraData(de)) / 864e5 + 1;
+  if (dias < 1) throw new Error('--de deve ser anterior ou igual a --ate.');
+  if (dias > MAX_DIAS) throw new Error(`O período tem ${dias} dias; o portal aceita no máximo ${MAX_DIAS}.`);
   return { de, ate };
 }
 
@@ -118,7 +132,11 @@ async function main() {
   }
 }
 
-main().catch((erro) => {
-  console.error(`Falha na coleta: ${erro.message}`);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((erro) => {
+    console.error(`Falha na coleta: ${erro.message}`);
+    process.exit(1);
+  });
+}
+
+module.exports = { lerPeriodo };

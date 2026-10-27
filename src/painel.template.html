@@ -232,6 +232,9 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
   opcoes(f.situacao, movs.map((m) => m.situacao));
   opcoes(f.responsavel, movs.map((m) => m.usuario));
   opcoes(f.login, movs.map((m) => m.login));
+  // Valor próprio para "sem login": o vazio do select já significa "Todos".
+  const SEM_LOGIN = '__sem_login__';
+  if (movs.some((m) => !m.login)) f.login.add(new Option('Sem login', SEM_LOGIN));
   f.de.min = f.ate.min = primeiroDia;
   f.de.max = f.ate.max = hoje;
 
@@ -329,7 +332,7 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
       (!f.comando.value || m.comando === f.comando.value) &&
       (!f.situacao.value || m.situacao === f.situacao.value) &&
       (!f.responsavel.value || m.usuario === f.responsavel.value) &&
-      (!f.login.value || m.login === f.login.value));
+      (!f.login.value || (f.login.value === SEM_LOGIN ? !m.login : m.login === f.login.value)));
   };
 
   // ---------- Formatação ----------
@@ -492,7 +495,7 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
     graficoBarras('g-cmd', contar(lista, 'comando').slice(0, 10), lista.length, false, (cmd) => { f.comando.value = cmd; });
     graficoBarras('g-resp', contar(lista, 'quem'), lista.length, true, (quem) => {
       const m = lista.find((x) => x.quem === quem);
-      f.login.value = m ? m.login : ''; f.responsavel.value = m ? m.usuario : '';
+      f.login.value = m ? m.login || SEM_LOGIN : ''; f.responsavel.value = m ? m.usuario : '';
     });
     tabela(lista);
   };

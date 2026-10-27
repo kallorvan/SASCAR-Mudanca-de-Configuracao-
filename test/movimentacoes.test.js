@@ -45,3 +45,13 @@ test('restaura o histórico embutido no painel com os mesmos ids da coleta', () 
   const { movimentacoes } = extrairDados(html);
   assert.deepStrictEqual(movimentacoes.map((m) => m.id), numerarRepetidas([mov, mov]).map((m) => m.id));
 });
+
+test('valida o período de --de/--ate', () => {
+  const { lerPeriodo } = require('../src/coletar');
+  assert.strictEqual(lerPeriodo([]), null);
+  assert.deepStrictEqual(lerPeriodo(['--de', '01/09/2026', '--ate', '30/09/2026']), { de: '01/09/2026', ate: '30/09/2026' });
+  assert.throws(() => lerPeriodo(['--de', '01/09/2026', '--ate', '01/10/2026']), /31 dias/);
+  assert.throws(() => lerPeriodo(['--de', '10/09/2026', '--ate', '01/09/2026']), /anterior/);
+  assert.throws(() => lerPeriodo(['--de', '31/09/2026', '--ate', '30/09/2026']), /inválida/);
+  assert.throws(() => lerPeriodo(['--de', '01/09/2026']), /juntos/);
+});
