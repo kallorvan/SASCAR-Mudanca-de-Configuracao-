@@ -55,3 +55,15 @@ test('valida o período de --de/--ate', () => {
   assert.throws(() => lerPeriodo(['--de', '31/09/2026', '--ate', '30/09/2026']), /inválida/);
   assert.throws(() => lerPeriodo(['--de', '01/09/2026']), /juntos/);
 });
+
+test('coleta padrão vai só até o último dia fechado', () => {
+  const { periodoPadrao, ultimoDiaFechado, lerPeriodo } = require('../src/coletar');
+  // 28/10 às 00:30 em Brasília (03:30 UTC): o último dia fechado é 27/10.
+  const agora = new Date('2026-10-28T03:30:00Z');
+  assert.strictEqual(ultimoDiaFechado(agora), '2026-10-27');
+  // 27/10 às 22:00 em Brasília ainda é dia 27 lá, mesmo já sendo 28 em UTC.
+  assert.strictEqual(ultimoDiaFechado(new Date('2026-10-28T01:00:00Z')), '2026-10-26');
+  assert.deepStrictEqual(periodoPadrao(agora), { de: '28/09/2026', ate: '27/10/2026' });
+  assert.throws(() => lerPeriodo(['--de', '20/10/2026', '--ate', '28/10/2026'], agora), /27\/10\/2026/);
+  assert.deepStrictEqual(lerPeriodo(['--de', '20/10/2026', '--ate', '27/10/2026'], agora), { de: '20/10/2026', ate: '27/10/2026' });
+});

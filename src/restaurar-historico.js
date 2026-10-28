@@ -18,7 +18,7 @@ function extrairDados(html) {
     id: [mov.veiculo, mov.data, mov.comando, mov.valorAnterior, mov.valorAtual].join('|'),
     primeiraColeta: dados.atualizadoEm,
   }));
-  return { atualizadoEm: dados.atualizadoEm, movimentacoes: numerarRepetidas(comId) };
+  return { atualizadoEm: dados.atualizadoEm, dadosAte: dados.dadosAte, movimentacoes: numerarRepetidas(comId) };
 }
 
 if (require.main === module) {

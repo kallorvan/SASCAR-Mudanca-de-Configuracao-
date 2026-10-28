@@ -27,6 +27,7 @@ function lerLayout(pasta = LAYOUT) {
 function gerarPainel(dados, modelo, layout = { css: '', js: '', logo: '', logoClaro: '', favicon: '' }) {
   const enxuto = {
     atualizadoEm: dados.atualizadoEm,
+    dadosAte: dados.dadosAte,
     movimentacoes: dados.movimentacoes.map((m) => Object.fromEntries(CAMPOS.map((c) => [c, m[c] ?? '']))),
   };
   // Impede que algum texto do portal feche a tag <script> antes da hora.
