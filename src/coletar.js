@@ -1,8 +1,9 @@
-// Entra no portal SASCAR Telemetry, abre o relatório "Mudança de Configuração" do último mês
-// e grava as movimentações em dados/movimentacoes.json, somando ao histórico já coletado.
+// Entra no portal SASCAR Telemetry, abre o relatório "Mudança de Configuração" dos últimos 30 dias
+// fechados (até 23:59 de ontem) e grava as movimentações em dados/movimentacoes.json, somando ao
+// histórico já coletado. O dia em curso nunca entra, para o painel só mostrar dias completos.
 //
 // Credenciais: variáveis de ambiente SASCAR_USUARIO, SASCAR_LOGIN e SASCAR_SENHA.
-// Período opcional no formato do portal: --de 01/09/2026 --ate 30/09/2026 (padrão: último mês).
+// Período opcional no formato do portal: --de 01/09/2026 --ate 30/09/2026 (até ontem, no máximo).
 
 const fs = require('fs');
 const path = require('path');
@@ -14,6 +15,19 @@ const ARQUIVO = path.join(__dirname, '..', 'dados', 'movimentacoes.json');
 const PASTA_DEPURACAO = path.join(__dirname, '..', 'tmp');
 // O portal aceita no máximo 30 dias por consulta.
 const MAX_DIAS = 30;
+const FUSO = 'America/Sao_Paulo';
+
+const somarDias = (iso, n) => { const d = new Date(`${iso}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const isoParaPortal = (iso) => iso.split('-').reverse().join('/');
+// Último dia fechado (ontem, no horário de Brasília) em aaaa-mm-dd.
+function ultimoDiaFechado(agora = new Date()) {
+  return somarDias(new Intl.DateTimeFormat('en-CA', { timeZone: FUSO }).format(agora), -1);
+}
+// Padrão da atualização diária: os 30 dias fechados mais recentes.
+function periodoPadrao(agora = new Date()) {
+  const ate = ultimoDiaFechado(agora);
+  return { de: isoParaPortal(somarDias(ate, -(MAX_DIAS - 1))), ate: isoParaPortal(ate) };
+}
 
 function exigirVariavel(nome) {
   const valor = process.env[nome];
@@ -68,7 +82,7 @@ async function abrirRelatorio(page, periodo) {
 }
 
 // Lê --de e --ate (dd/mm/aaaa) da linha de comando.
-function lerPeriodo(args) {
+function lerPeriodo(args, agora = new Date()) {
   const valor = (nome) => { const i = args.indexOf(nome); return i >= 0 ? args[i + 1] : null; };
   const de = valor('--de'), ate = valor('--ate');
   if (!de && !ate) return null;
@@ -83,6 +97,8 @@ function lerPeriodo(args) {
   const dias = (paraData(ate) - paraData(de)) / 864e5 + 1;
   if (dias < 1) throw new Error('--de deve ser anterior ou igual a --ate.');
   if (dias > MAX_DIAS) throw new Error(`O período tem ${dias} dias; o portal aceita no máximo ${MAX_DIAS}.`);
+  const fechado = ultimoDiaFechado(agora);
+  if (paraData(ate) > new Date(`${fechado}T00:00:00Z`)) throw new Error(`--ate vai no máximo até ${isoParaPortal(fechado)}, o último dia fechado.`);
   return { de, ate };
 }
 
@@ -109,7 +125,9 @@ async function main() {
 
   try {
     await entrar(page);
-    const periodo = lerPeriodo(process.argv.slice(2));
+    const agora = new Date();
+    const manual = lerPeriodo(process.argv.slice(2), agora);
+    const periodo = manual || periodoPadrao(agora);
     await abrirRelatorio(page, periodo);
     const linhas = await lerLinhas(page);
     if (!linhas.length) throw new Error('O relatório abriu, mas nenhuma linha foi encontrada na tabela.');
@@ -117,10 +135,13 @@ async function main() {
     const coletadoEm = new Date().toISOString();
     const novas = numerarRepetidas(linhas.map(linhaParaMovimentacao).filter((m) => m.data));
     const anterior = fs.existsSync(ARQUIVO) ? JSON.parse(fs.readFileSync(ARQUIVO, 'utf8')) : { movimentacoes: [] };
-    const movimentacoes = mesclar(anterior.movimentacoes, novas, coletadoEm);
+    // Coleta manual de um período antigo não avança o último dia fechado do histórico.
+    const dadosAte = manual ? anterior.dadosAte || ultimoDiaFechado(agora) : ultimoDiaFechado(agora);
+    // Tira também dias incompletos que coletas antigas (feitas durante o dia) deixaram no histórico.
+    const movimentacoes = mesclar(anterior.movimentacoes, novas, coletadoEm).filter((m) => m.data.slice(0, 10) <= dadosAte);
 
     fs.mkdirSync(path.dirname(ARQUIVO), { recursive: true });
-    fs.writeFileSync(ARQUIVO, JSON.stringify({ atualizadoEm: coletadoEm, movimentacoes }, null, 1) + '\n');
+    fs.writeFileSync(ARQUIVO, JSON.stringify({ atualizadoEm: coletadoEm, dadosAte, movimentacoes }, null, 1) + '\n');
     const datas = novas.map((m) => m.data.slice(0, 10)).sort();
     console.log(`Coletadas ${novas.length} movimentações (${datas[0]} a ${datas[datas.length - 1]}); histórico com ${movimentacoes.length}.`);
   } catch (erro) {
@@ -139,4 +160,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { lerPeriodo };
+module.exports = { lerPeriodo, periodoPadrao, ultimoDiaFechado };

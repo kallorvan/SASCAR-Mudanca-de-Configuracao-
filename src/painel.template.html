@@ -202,7 +202,8 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
   const fmtDia = (d) => `${d.slice(8, 10)}/${d.slice(5, 7)}`;
   const fmtDiaLongo = (d) => `${Number(d.slice(8, 10))} de ${MESN[Number(d.slice(5, 7)) - 1]}`;
   const fmtDelta = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1, signDisplay: 'exceptZero' });
-  const hoje = new Intl.DateTimeFormat('en-CA', { timeZone: FUSO }).format(agora);
+  // Último dia fechado nos dados (a coleta para às 23:59 de ontem); históricos antigos usam o dia da coleta.
+  const hoje = base.dadosAte || new Intl.DateTimeFormat('en-CA', { timeZone: FUSO }).format(agora);
 
   const movs = base.movimentacoes.map((m) => {
     const enviada = new Date(m.data);
@@ -221,7 +222,7 @@ td small.u{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:
   });
   const primeiroDia = movs.length ? movs.reduce((a, m) => (m.dia < a ? m.dia : a), movs[0].dia) : hoje;
 
-  g('atualizado').innerHTML = `<strong>Dados atualizados em ${fmtDataHora.format(agora)}.</strong> Histórico desde ${fmtDia(primeiroDia)}/${primeiroDia.slice(0, 4)}, com ${nf(movs.length)} movimentações.`;
+  g('atualizado').innerHTML = `<strong>Dados até ${fmtDia(hoje)}/${hoje.slice(0, 4)} às 23:59, atualizados em ${fmtDataHora.format(agora)}.</strong> Histórico desde ${fmtDia(primeiroDia)}/${primeiroDia.slice(0, 4)}, com ${nf(movs.length)} movimentações.`;
   g('rodape-rel').innerHTML = `<b>Mudança de Configuração</b> · desde ${fmtDia(primeiroDia)}/${primeiroDia.slice(0, 4)} · ${nf(movs.length)} movimentações`;
   g('alertas-regra').textContent = `Mudanças expiradas, pendentes há mais de ${LIMITE_PENDENCIA_HORAS} h e todo ajuste de hodômetro ou horímetro.`;
 
